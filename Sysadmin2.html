@@ -1,0 +1,2171 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Server Administrator II - RH134</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="Sysadmin2_files/libs/clipboard/clipboard.min.js"></script>
+<script src="Sysadmin2_files/libs/quarto-html/quarto.js"></script>
+<script src="Sysadmin2_files/libs/quarto-html/popper.min.js"></script>
+<script src="Sysadmin2_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="Sysadmin2_files/libs/quarto-html/anchor.min.js"></script>
+<link href="Sysadmin2_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="Sysadmin2_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="Sysadmin2_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="Sysadmin2_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="Sysadmin2_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Server Administrator II - RH134</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="improving-command-line-productivity" class="level2">
+<h2 class="anchored" data-anchor-id="improving-command-line-productivity">Improving Command Line Productivity</h2>
+<p><strong>Writing Simple Bash Scripts</strong></p>
+<p>The Bash interpreter start in the first line of script with <strong>#! /bin/bash</strong> and to run the script we need :</p>
+<ol type="1">
+<li><p>Config the execute permission on script</p></li>
+<li><p>Have the script on <code>$HOME/bin</code> and call the script name or any other bin path inside your <code>$PATH</code></p></li>
+</ol>
+<p><strong>LOOPS</strong></p>
+<p><em>Syntax</em> of bash <strong>for loop</strong></p>
+<pre><code>for &lt;VARIABLE&gt; in &lt;LIST&gt;; do
+&lt;COMMAND&gt; &lt;VARIABLE&gt;
+done</code></pre>
+<p>Sample:</p>
+<pre><code>#1 
+for HOST in host1 host2 host3; do echo $HOST; done
+
+#2
+for HOST in host{1,2,3}; do echo $HOST; done
+
+
+#3
+for HOST in host{1..3}; do echo $HOST; done
+
+#4
+for FILE in file* ; do ls $FILE; done
+
+#5
+for FILE in file{a..c}; do ls $FILE; done
+
+#6
+for PACKAGE in $(rpm -qa | grep kernel); \
+do echo "$PACKAGE was installed on \
+$(date -d @$(rpm -q -qqf "%{INSTALLTIME} \n" $PACKAGE))"; done
+</code></pre>
+<p><strong>Sequence</strong></p>
+<p>Sample :</p>
+<pre><code>#1
+seq 2 2 10
+
+output
+2
+4
+6
+8
+10
+
+
+#2
+for EVEN in $(seq 2 2 10); do "$EVEN";done</code></pre>
+<p><strong>Exit Codes</strong></p>
+<ul>
+<li><p>0 : successfully</p></li>
+<li><blockquote class="blockquote">
+<p>0 : not successfully</p>
+</blockquote></li>
+<li><p>0 to 255 : range</p></li>
+<li><p>To display the exit code</p></li>
+</ul>
+<pre><code>echo $?</code></pre>
+<p><strong>IF / THEN</strong></p>
+<pre><code>
+#1
+if &lt;condition&gt;; then
+    &lt;STATEMENT&gt;
+    ...
+    &lt;STATEMENT&gt;
+  else
+    &lt;STATEMENT&gt;
+    ...
+    &lt;STATEMENT&gt;
+fi
+
+
+
+#2
+if &lt;condition&gt;; then
+    &lt;STATEMENT&gt;
+    ...
+    &lt;STATEMENT&gt;
+  elif &lt;condition&gt;; then
+    &lt;STATEMENT&gt;
+    ...
+    &lt;STATEMENT&gt;
+  else
+    &lt;STATEMENT&gt;
+fi
+
+
+</code></pre>
+<p><strong>Sample</strong></p>
+<pre><code>systemctl is-active psacct &gt; /dev/null 2&gt;&amp;1
+if [ $? -ne 0 ] ; then
+sudo systemctl start psacct
+else
+sudo systemctl stop psacct
+fi</code></pre>
+<p><strong>Regex to match text in command outputs</strong></p>
+<blockquote class="blockquote">
+<p>Regex can be used with command as vim, grep and less</p>
+</blockquote>
+<p>There are several options below some samples :</p>
+<ul>
+<li>Show me lines that starts with <em>cat</em> using <code>^</code></li>
+</ul>
+<pre><code>grep '^cat' &lt;FILE&gt;</code></pre>
+<ul>
+<li>Show me lines that ends with <em>cat</em> using <code>$</code></li>
+</ul>
+<pre><code>grep 'cat$' &lt;FILE&gt;</code></pre>
+<ul>
+<li>Show me lines that start and end with <em>cat</em> using <code>^</code> and <code>$</code></li>
+</ul>
+<pre><code>grep '^cat$' &lt;FILE&gt;</code></pre>
+<ul>
+<li>Whildcard for any character <em>c.t</em></li>
+</ul>
+<pre><code>grep '^c.t$' &lt;FILE&gt;
+
+Output
+cat
+cit
+cot
+cpt
+cst
+</code></pre>
+<ul>
+<li>Show me lines with one character of list in [xxx]</li>
+</ul>
+<pre><code>grep '^c[aou]t$' &lt;FILE&gt;
+
+output
+cat
+cot
+cut</code></pre>
+<ul>
+<li>Show me lines with <em>c</em> + <code>&lt;characters&gt;</code> + <em>t</em></li>
+</ul>
+<pre><code>grep 'c.*t' &lt;FILE&gt;
+
+output
+cat
+zuchetto
+zymochemistry
+</code></pre>
+<ul>
+<li>Show me lines with <em>c</em> + <code>&lt;2  characters&gt;</code> + <em>t</em></li>
+</ul>
+<p><em>Simple way ‘c..t’</em> but we can use modifiers :</p>
+<pre><code>grep 'c.\{2\}t' &lt;FILE&gt;
+
+#output
+Yacolt
+Zacynthus
+zoocultural</code></pre>
+<ul>
+<li>Show me lines that starts with <em>c</em> + <code>&lt;starts with 2 up to 3 characters&gt;</code> + <em>t</em></li>
+</ul>
+<pre><code>grep 'c.\{2,3\}t' &lt;FILE&gt;
+
+#output
+zirconate
+zoophysicist
+zuchetto
+zygocactus
+zoocyst
+</code></pre>
+<p><strong>grep Options</strong></p>
+<ul>
+<li><p><code>-i</code> case insensitivity</p></li>
+<li><p><code>-v</code> invert the search</p></li>
+<li><p><code>-E</code> search for ln and nx in particular file <code>grep -E 'ln|nx file'</code></p></li>
+<li><p>Do not show lines that starts with <em>#</em> <code>^#</code> or <em>blank lines</em> <code>^$</code></p></li>
+</ul>
+<pre><code>grep -vE '^#|^$' file</code></pre>
+<ul>
+<li>Do not show lines that starts with <em>#</em> or <em>;</em></li>
+</ul>
+<pre><code>grep -v '^[#;]' file</code></pre>
+</section>
+<section id="scheduling-future-tasks" class="level2">
+<h2 class="anchored" data-anchor-id="scheduling-future-tasks">Scheduling Future Tasks</h2>
+<p><strong>One time Job</strong> : <code>at</code> command</p>
+<ul>
+<li><code>at</code> <em>TIMESPEC</em> command to schedule a new job <em>Samples</em>
+<ul>
+<li><code>at now + 5min</code></li>
+<li><code>at teatime tomorrow</code> (<em>teatime is 16:00</em>)</li>
+<li><code>at noon + 4 days</code></li>
+<li><code>at 5pm august 3 2021</code></li>
+</ul>
+<em>Cool options</em>
+<ul>
+<li><code>-g</code> specify a queue <strong>g</strong> , queue goes a to z</li>
+</ul></li>
+</ul>
+<p>*<code>atq</code> to check the jobs schedules on my queue</p>
+<ul>
+<li>To inspect all info about job</li>
+</ul>
+<pre><code>at -c &lt;job number&gt;</code></pre>
+<ul>
+<li>To remove a job</li>
+</ul>
+<pre><code>atrm &lt;job number&gt; </code></pre>
+<ul>
+<li>To monitor a job or queue</li>
+</ul>
+<pre><code>watch atq</code></pre>
+<p><strong>Recurring Jobs</strong> <code>cron</code> command</p>
+<p><strong>USER</strong></p>
+<p>Basic commands :</p>
+<ul>
+<li><code>crontab -l</code> : list the jobs for the current user</li>
+<li><code>crontab -r</code> : Remove all jobs from current user</li>
+<li><code>crontab -e</code> : Edit jobs</li>
+<li><code>crontab &lt;filename&gt;</code> : Remove all jobs and replace with the job read from filename, if no file is specified <em>stdin</em> is used</li>
+</ul>
+<p>Once the job is schedule will have a file on <em>/var/spool/cron/</em></p>
+<p>To check the structure of contrab schedule we can check the file <em>/etc/crontab</em></p>
+<pre><code>cat /etc/crontab
+
+
+#output
+
+SHELL=/bin/sh
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+
+# Example of job definition:
+# .---------------- minute (0 - 59)
+# |  .------------- hour (0 - 23)
+# |  |  .---------- day of month (1 - 31)
+# |  |  |  .------- month (1 - 12) OR jan,feb,mar,apr ...
+# |  |  |  |  .---- day of week (0 - 6) (Sunday=0 or 7) OR sun,mon,tue,wed,thu,fri,sat
+# |  |  |  |  |
+# *  *  *  *  * user-name command to be executed
+
+</code></pre>
+<ul>
+<li>Other options</li>
+</ul>
+<pre><code># every 5min
+*/5 * * * * &lt;xxx&gt;   
+
+# every 5min, between 9am and 5pm Sun and Wed in July
+*/5 9-16 * Jul sun, wed  
+
+</code></pre>
+<ul>
+<li><strong>Logs</strong> : Can check the cron jobs logs on <strong>/var/log/cron</strong></li>
+</ul>
+<p><br></p>
+<p><strong>SYSTEM</strong> cron jobs</p>
+<p>There are some ways to have a system cron jobs</p>
+<ul>
+<li><strong>/etc/crontab</strong>
+<ul>
+<li>Simple add the job on file</li>
+</ul></li>
+<li><strong>/etc/cron.d/</strong>
+<ul>
+<li>Add a file with job schedule on this path</li>
+</ul></li>
+<li><strong>/etc/cron/<path></path></strong>
+<ul>
+<li>run the command to check <code>ls /etc/cron\.*</code> we can have folders with cron job files or <strong>scripts</strong></li>
+</ul></li>
+</ul>
+<p>The backup mechanism of cron files is <strong>anacron</strong> and it is configured on <strong>/etc/anacrontab</strong> and the purpose is make sure that all important jobs always run</p>
+<ul>
+<li>There are different files on <strong>/var/spool/anacron</strong> for each daily, weekly and monthly jobs with timestamps based on schedule if there were a job that should be perform and machine is offline the job will be triggered</li>
+</ul>
+<p><br></p>
+<p><strong>Systemd Timer Unit</strong></p>
+<p>This is a new scheduling function introduced on RHEL7, sample :</p>
+<p>The <code>sysstat</code> package provides a <em>systemd timer unit</em> called <strong>sysstat-collect.timer</strong> to collect system statistics every 10 minutes. The following output shows the configuration lines of <strong>/usr/lib/systemd/system/sysstat-collect.timer</strong>.</p>
+<pre><code>...output omitted...
+[Unit]
+Description=Run system activity accounting tool every 10 minutes
+
+[Timer]
+OnCalendar=*:00/10
+
+[Install]
+WantedBy=sysstat.service</code></pre>
+<ul>
+<li>To check the timers on system</li>
+</ul>
+<pre><code>systemctl --type timer</code></pre>
+<p>If need to modify we can do on <strong>/etc/systemd/system</strong> and after change the timer unit config files need to reload the daemon and activate the timer unit</p>
+<pre><code># Reload
+systemctl daemon-reload
+
+# Activate
+systemctl enable --now &lt;unitname&gt;.timr
+</code></pre>
+<p><strong>Managing Temporary Files</strong></p>
+<p>We can configure <em>timers</em> that manages temporary files.</p>
+<ul>
+<li>Some applications use <strong>/tmp</strong> to hold temp data</li>
+<li>Others use use specific locations such as daemon and user-specific volatile dirs under <strong>/run</strong>, when system reboot those volatile store will be gone.</li>
+</ul>
+<p>The tool <strong>systemd-tmpfiles</strong> provide structured and configurable method to manage temp dirs and files</p>
+<p>When <strong>systemd</strong> starts a system, one of the first service units launched is <strong>systemd-tmpfiles-setup</strong>. This service runs the command</p>
+<pre><code>systemd-tmpfiles --create --remove</code></pre>
+<p>This command reads configuration files from :</p>
+<ul>
+<li>/usr/lib/tmpfiles.d/*.conf,</li>
+<li>/run/tmpfiles.d/*.conf, and</li>
+<li>/etc/tmpfiles.d/*.conf.</li>
+</ul>
+<p>Any files and directories marked for deletion in those configuration files is removed, and any files and directories marked for creation (or permission fixes) will be created with the correct permissions if necessary.</p>
+<ul>
+<li>Cleaning Temporary Files with a Systemd Timer</li>
+</ul>
+<p>The <strong>systemd</strong> timer unit called <strong>systemd-tmpfiles-clean.timer</strong> triggered <strong>systemd-tmpfiles-clean.service</strong> on regular interval, which executes the command to clean</p>
+<pre><code>systemd-tmpfiles --clean</code></pre>
+<p>To view the contents of the <strong>systemd-tmpfiles-clean.timer</strong> config files:</p>
+<pre><code>systemctl cat systemd-tmpfiles-clean.timer</code></pre>
+<p>If need to check the parameter frequence of clean up we need to make sure to reload and enable the timer</p>
+<pre><code>systemctl daemon-reload
+
+systemctl enable --now systemd-tmpfiles.clean.timer</code></pre>
+<ul>
+<li>Cleaning Temporary Files Manually</li>
+</ul>
+<p>Command :</p>
+<pre><code>systemd-tmpfiles --clean</code></pre>
+<p><em>this command wll purge all files which have not been accessed, changed, or modified more recently than max age defined on config file</em></p>
+<p>The format of config file <strong>systemd-tmpfiles</strong> is detailed in the <strong>tmpfiles.d</strong> manual page</p>
+<p>Sample:</p>
+<p>create the /run/systemd/seats directory if it does not yet exist, owned by the user root and the group root, with permissions set to rwxr-xr-x. This directory will not be automatically purged.</p>
+<pre><code>#Type, Path, Mode, UID, GID, Age, and Argument
+d /run/systemd/seats 0755 root root -
+</code></pre>
+<p>Create the /home/student directory if it does not yet exist. If it does exist, empty it of all contents. When systemd-tmpfiles –clean is run, remove all files which have not been accessed, changed, or modified in more than one day.</p>
+<pre><code>#Type, Path, Mode, UID, GID, Age, and Argument
+D /home/student 0700 student student 1d</code></pre>
+<p>Create the symbolic link /run/fstablink pointing to /etc/fstab. #Never automatically purge this line.</p>
+<pre><code>#Type, Path, Mode, UID, GID, Age, and Argument
+L /run/fstablink - root root - /etc/fstab</code></pre>
+<ul>
+<li>Configuration File Precedence</li>
+</ul>
+<p>The config file can exists in three places:</p>
+<ul>
+<li>/etc/tmpfiles.d/*.conf
+<ul>
+<li>provided by the relevant RPM packages, should not edit</li>
+</ul></li>
+<li>/run/tmpfiles.d/*.conf
+<ul>
+<li>volatile files, used by daemons</li>
+</ul></li>
+<li>/usr/lib/tmpfiles.d/*.conf</li>
+</ul>
+</section>
+<section id="tuning-system-performance" class="level2">
+<h2 class="anchored" data-anchor-id="tuning-system-performance">Tuning System Performance</h2>
+<blockquote class="blockquote">
+<p><strong>tuned</strong> daemon allow us optmize system performance by selection a tunning profile</p>
+</blockquote>
+<ul>
+<li>To install and enable <strong>tuned</strong></li>
+</ul>
+<pre><code>yum install tuned
+systemctl enable --now tuned</code></pre>
+<section id="profiles" class="level3">
+<h3 class="anchored" data-anchor-id="profiles">Profiles</h3>
+<ul>
+<li><p><strong>balanced</strong> : Ideal for systems that require a compromise between power saving and performance.</p></li>
+<li><p><strong>desktop</strong> : Derived from the balanced profile. Provides faster response of interactive applications.</p></li>
+<li><p><strong>throughput-performance</strong> : Tunes the system for maximum throughput.</p></li>
+<li><p><strong>latency-performance</strong> : Ideal for server systems that require low latency at the expense of power consumption.</p></li>
+<li><p><strong>network-latency</strong> : Derived from the latency-performance profile. It enables additional network tuning parameters to provide low network latency.</p></li>
+<li><p><strong>network-throughput</strong> : Derived from the throughput-performance profile. Additional network tuning parameters are applied for maximum network throughput.</p></li>
+<li><p><strong>powersave</strong> : Tunes the system for maximum power saving.</p></li>
+<li><p><strong>oracle</strong> : Optimized for Oracle database loads based on the throughput-performance profile.</p></li>
+<li><p><strong>virtual-guest</strong> : Tunes the system for maximum performance if it runs on a virtual machine.</p></li>
+<li><p><strong>virtual-host</strong> : Tunes the system for maximum performance if it acts as a host for virtual machines</p></li>
+</ul>
+</section>
+<section id="managing-profiles-from-command-line" class="level3">
+<h3 class="anchored" data-anchor-id="managing-profiles-from-command-line">Managing profiles from command line</h3>
+<ul>
+<li>To active</li>
+</ul>
+<pre><code>tuned-adm active</code></pre>
+<ul>
+<li>To List all available profiles</li>
+</ul>
+<pre><code>tuned-adm list</code></pre>
+<ul>
+<li>To switch the active profile to a different one</li>
+</ul>
+<pre><code>tuned-adm profile &lt;profile_name&gt;
+tuned-adm active</code></pre>
+<ul>
+<li>To have a recommendation of profile</li>
+</ul>
+<pre><code>tuned-adm recommened</code></pre>
+<ul>
+<li>To deactivate</li>
+</ul>
+<pre><code>tuned-adm off
+tuned-adm active</code></pre>
+</section>
+<section id="influencing-process-scheduling" class="level3">
+<h3 class="anchored" data-anchor-id="influencing-process-scheduling">Influencing Process Scheduling</h3>
+<blockquote class="blockquote">
+<p>Prioritize or de-prioritize specific process with <strong>nice</strong> and <strong>renice</strong></p>
+</blockquote>
+<ul>
+<li>Nice values
+<ul>
+<li>19 : Nicest (lowest priority)</li>
+<li>0 : Neutral</li>
+<li>-20: Least nice (highest priority)</li>
+</ul></li>
+</ul>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="img/nice_renice.png" class="img-fluid" style="width:90.0%"></p>
+</div>
+</div>
+<ul>
+<li>Display Nice Levels from the command line</li>
+</ul>
+<pre><code>ps axo pid, comm, nice, cls --sort=-nice</code></pre>
+<ul>
+<li>Start process with different Nice levels</li>
+</ul>
+<pre><code># default nice is 10
+nice sha1sum /dev/zero &amp;
+
+# setting to 15
+nice -n 15 sha1sum &amp;</code></pre>
+<ul>
+<li>Change the Nice level of existing process</li>
+</ul>
+<pre><code>renice -n &lt;level&gt; &lt;process number&gt;</code></pre>
+</section>
+</section>
+<section id="controling-access-to-files-with-acls" class="level2">
+<h2 class="anchored" data-anchor-id="controling-access-to-files-with-acls">Controling Access to Files with ACLs</h2>
+<blockquote class="blockquote">
+<p>ACLs <em>Access Control List</em> are extention of permissions</p>
+</blockquote>
+<ul>
+<li>To check if file have ACL we going to see a <code>+</code> on long list ouput</li>
+</ul>
+<pre><code>-rwxrw----+ 1 user operators 130 Mar 19 23:56 reports.txt</code></pre>
+<ul>
+<li>The group permission on <code>ls -l</code> is masked, will not be the real permission of this file need to check ACL settings</li>
+</ul>
+<blockquote class="blockquote">
+<p>Changing group permissions on a file with an ACL by using <strong>chmod</strong> does not change the group owner permissions, but does change the ACL mask. Use <strong>setfacl -m g::perms file</strong> if the intent is to update the file’s group owner permissions.</p>
+</blockquote>
+<p><br></p>
+<ul>
+<li>View File or Directory ACLs using <strong>getfacl <file or="" dir=""></file></strong> command</li>
+</ul>
+<pre><code>[user@host content]$ getfacl reports.txt
+# file: reports.txt
+# owner: user
+# group: operators
+user::rwx
+user:consultant3:---
+user:1005:rwx          #effective:rw-
+group::rwx             #effective:rw-
+group:consultant1:r--
+group:2210:rwx         #effective:rw-
+mask::rw-
+other::---</code></pre>
+<ul>
+<li>The ACL MASK</li>
+</ul>
+<p>Defines the maximum permissions that you can grant. It does not restrict permissions of the file owner or other user. all files and directories that implement ACL will have an ACL mask.</p>
+<p>By default , the mask is recalculated whenever any of the affected ACLs are added, modified or deleted</p>
+<ul>
+<li>Changing ACL file permissions <strong>setfacl</strong></li>
+</ul>
+<pre><code>$ setfacl -m u:name:rX file</code></pre>
+<ul>
+<li><code>-m</code> : modify ,
+<ul>
+<li><code>x</code> delete</li>
+</ul></li>
+<li><code>u</code> : user,
+<ul>
+<li><code>g</code> for group,<br>
+</li>
+<li><code>o</code> for others</li>
+</ul></li>
+<li><code>name</code>: name of user</li>
+<li><code>rX</code> : permission
+<ul>
+<li><code>X</code> uppercase can be used to indicate that execute permission should only be set on dir and not regular files, unless the file already has the relevant execute permission.</li>
+</ul></li>
+<li>ACL recursive modifications</li>
+</ul>
+<pre><code>$ setfacl -R -m u:name:rX directory</code></pre>
+<ul>
+<li>Deleting ACL</li>
+</ul>
+<pre><code>$ setfacl -x u:name,g:name file</code></pre>
+<ul>
+<li>Delete all ACL entries</li>
+</ul>
+<pre><code>$ setfacl -b file</code></pre>
+</section>
+<section id="managing-selinux-security" class="level2">
+<h2 class="anchored" data-anchor-id="managing-selinux-security">Managing SELinux Security</h2>
+<blockquote class="blockquote">
+<p>Security Enhanced Linux (<em>SELinux</em>) is an additional layer of system security. The primary goal of SELinux is to <strong>protect user data</strong> from system services that have been compromised</p>
+</blockquote>
+<p><strong>Targeted policy</strong> <em>default</em></p>
+<p>SELinux consists of sets of policies, defined by the application developers, that declare exactly what actions and accesses are proper and allowed for each binary executable, configuration file, and data file used by an application.</p>
+<ul>
+<li><em>Modes</em>
+<ul>
+<li><strong>Enforcing</strong> : SELinux is enforcing access control rules. Computers generally run in this mode.</li>
+<li><strong>Permissive</strong> : SELinux is active but instead of enforcing access control rules, it records warnings of rules that have been violated. This mode is used primarily for <strong>testing</strong> and <strong>troubleshooting</strong></li>
+<li><strong>Disabled</strong> : SELinux is turned off entirely: no SELinux violations are denied, nor even recorded. <strong>Discouraged!</strong></li>
+</ul></li>
+<li>To show SELinux information <code>ls -lZ</code></li>
+</ul>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="img/SELinux.png" class="img-fluid" style="width:90.0%"></p>
+</div>
+</div>
+<ul>
+<li>Checking the current state</li>
+</ul>
+<pre><code>[user@host ~]# getenforce
+Enforcing</code></pre>
+<ul>
+<li>Check the persistently state</li>
+</ul>
+<pre><code>cat /etc/selinux/config</code></pre>
+<ul>
+<li>Set enforce mode</li>
+</ul>
+<pre><code>[user@host ~]# setenforce
+usage: setenforce [ Enforcing | Permissive | 1 | 0 ]
+[user@host ~]# setenforce 0
+[user@host ~]# getenforce
+Permissive</code></pre>
+<ul>
+<li>Check status</li>
+</ul>
+<pre><code>sestatus</code></pre>
+<section id="controlling-selinux-file-contexts" class="level3">
+<h3 class="anchored" data-anchor-id="controlling-selinux-file-contexts">Controlling SELinux File Contexts</h3>
+<ul>
+<li>When <strong>copy</strong> a file or <strong>create</strong> a new file the file <strong>inherits</strong> the SELinux <strong>context</strong> of the directory</li>
+<li>If I <strong>move</strong> a file it <strong>retain</strong> the SELinux <strong>context</strong></li>
+</ul>
+<p><strong>Change context of a file</strong></p>
+<ul>
+<li>Commands
+<ul>
+<li><strong>semanage</strong> : create the role, a create page is <code>man semanage-fcontext</code> , sample of rule :</li>
+</ul>
+<pre><code># create the rule
+semanage fcontext -a -t httpd_sys_content_t "/web(/.*)?"
+
+# apply a new rule
+restorecon -R -v /web</code></pre>
+<ul>
+<li><strong>fcontext</strong> : used to list and see changes</li>
+</ul>
+<pre><code># l : list
+# C : change
+semage fcontext -lC</code></pre>
+<ul>
+<li><strong>restorecon</strong> : use when the file already in the correct location, for example, if someone moved the file from A to B and B is the correct location, using the command <code>restorecon &lt;file&gt;</code> will restore the context</li>
+<li><strong>chcon</strong> : It is not persistent , does not survive restorecon or relable, <strong>avoid</strong></li>
+</ul></li>
+</ul>
+</section>
+<section id="adjusting-selinux-policy-with-booleans" class="level3">
+<h3 class="anchored" data-anchor-id="adjusting-selinux-policy-with-booleans">Adjusting SELinux Policy with Booleans</h3>
+<blockquote class="blockquote">
+<p>SELinux booleans are switches that change the behavior of the SELinux policy. SELinux booleans are rules that can be enabled or disabled.</p>
+</blockquote>
+<ul>
+<li>Check booleans</li>
+</ul>
+<pre><code>[user@host ~]$ getsebool -a
+abrt_anon_write --&gt; off
+abrt_handle_event --&gt; off
+abrt_upload_watch_anon_write --&gt; on
+antivirus_can_scan_system --&gt; off
+antivirus_use_jit --&gt; off
+...output omitted...
+
+
+[user@host ~]$ getsebool httpd_enable_homedirs
+httpd_enable_homedirs --&gt; off
+
+
+# list booleans 
+[user@host ~]$ sudo semanage boolean -l | grep httpd_enable_homedirs
+httpd_enable_homedirs  (on,on) Allow httpd to enable homedirs</code></pre>
+<ul>
+<li>write pending values to policy, P(<em>persistence</em>)</li>
+</ul>
+<pre><code>setsebool -P httpd_enable_homedirs on</code></pre>
+<ul>
+<li>list booleans with current state and diff from default state</li>
+</ul>
+<pre><code>[user@host ~]$ sudo semanage boolean -l -C
+SELinux boolean       State Default Description
+cron_can_relabel        (off,on)  Allow cron to can relab</code></pre>
+</section>
+<section id="investigating-and-resolving-selinux-issues" class="level3">
+<h3 class="anchored" data-anchor-id="investigating-and-resolving-selinux-issues">Investigating and REsolving SELinux issues</h3>
+<ul>
+<li><strong>sealert</strong> display info during SELinux troubleshooting</li>
+</ul>
+<p><em>Guide to troubleshooting SELinux issues:</em></p>
+<ol type="1">
+<li><p>Before thinking of making any adjustments, consider that SELinux may be doing its job correctly by prohibiting the attempted access.</p></li>
+<li><p>The most common SELinux issue is an incorrect file context, <em>“when we move files”</em>.</p></li>
+<li><p>Another remedy for overly restrictive access could be the adjustment of a Boolean.</p></li>
+<li><p>It is possible that the SELinux policy has a bug that prevents a legitimate access.</p></li>
+</ol>
+<p><strong>Monitor SELinux Violations</strong></p>
+<p>If we have the package <code>setroubleshoot-serve</code> installed</p>
+<ul>
+<li><strong>/var/log/audit/audit.log</strong> : received log messages related SELinux violations</li>
+<li><strong>/var/log/messages</strong> : short summary of SELinux violations messages</li>
+</ul>
+</section>
+</section>
+<section id="managing-basic-storage" class="level2">
+<h2 class="anchored" data-anchor-id="managing-basic-storage">Managing Basic Storage</h2>
+<section id="adding-partition-file-systems-and-persistent-mounts" class="level3">
+<h3 class="anchored" data-anchor-id="adding-partition-file-systems-and-persistent-mounts">Adding Partition, File Systems and Persistent Mounts</h3>
+<ul>
+<li><strong>MBR Partitioning Schema</strong>
+<ul>
+<li>The <em>Master Boot Record (MBR)</em> partitioning schema dictated how disks are partitioned on system running BIOS firmware
+<ul>
+<li>Can have manimum of four primary partition</li>
+<li>Maximum disk and partition size of 2TiB</li>
+<li>Using extended and logical partitions we can create a maximum of 15 partitions</li>
+</ul></li>
+</ul></li>
+</ul>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="img/mbr.png" class="img-fluid" style="width:90.0%"></p>
+</div>
+</div>
+<ul>
+<li><strong>GPT Partitioning Schema</strong>
+<ul>
+<li>The <em>Unified Extensible Firmware Interface (UEFI)</em> firmware is a standard laying out
+<ul>
+<li>Does not have limit of 2TB</li>
+<li>Maximum of 128 partitions</li>
+<li>Maximum of 8ZiB zebibytes</li>
+<li>have a backup on the end of the disk</li>
+</ul></li>
+</ul></li>
+</ul>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="img/gpt.png" class="img-fluid" style="width:90.0%"></p>
+</div>
+</div>
+<ul>
+<li><strong>Managing Partitions with Parted</strong></li>
+</ul>
+<p>Partition editors are programs which allow admin to make changes to a disk’s</p>
+<p><strong>parted</strong> command</p>
+<ul>
+<li>Display info of <code>/dev/vda</code> with subcommand <strong>print</strong>
+<ul>
+<li>if do not provide subcommand will open an interactive session</li>
+<li>we can change the display to KB, MB, GB, TB or S for sector using <code>unit s</code> argument</li>
+<li><strong>parted</strong> makes the change immediately</li>
+</ul></li>
+</ul>
+<pre><code>[root@host ~]# parted /dev/vda print
+Model: Virtio Block Device (virtblk)
+Disk /dev/vda: 53.7GB
+Sector size (logical/physical): 512B/512B
+Partition Table: msdos
+Disk Flags:
+
+Number  Start       End       Size        Type     File system    Flags  
+1       1049kB      10.7GB    10.7GB    primary     xfs           boot
+2       10.7GB      53.7GB    42.9GB    primary     xfs
+</code></pre>
+<p><strong>Writing the partition table on a NEW DISK</strong></p>
+<p><em>MBR</em></p>
+<pre><code>[root@host ~]# parted /dev/vdb mklabel msdos</code></pre>
+<p><em>GPT</em></p>
+<pre><code>[root@host ~]# parted /dev/vdb mklabel gpt</code></pre>
+<blockquote class="blockquote">
+<p>The <strong>mklabel</strong> subcommand wipes the existing partition table. Only use mklabel when the intent is to reuse the disk without regard to the existing data. If a new label changes the partition boundaries, <strong>all data in existing file systems will become inaccessible</strong>.</p>
+</blockquote>
+<p><br></p>
+<p><strong>Creating MBR Partitions</strong></p>
+<ol type="1">
+<li>Specify the disk device to create the partition on using <strong>parted </strong></li>
+</ol>
+<pre><code># parted /dev/vdb</code></pre>
+<ol start="2" type="1">
+<li>Use the <strong>mpart</strong> subcommand to create new primary or extented partition</li>
+</ol>
+<pre><code>(parted) mkpart
+Partition type?
+primary/extended? primary</code></pre>
+<ol start="3" type="1">
+<li>Indicate the file-system type, to get the list of all types use <code>parted /dev/vdb help mkpart</code></li>
+</ol>
+<pre><code>File system type? [ext2]? xfs</code></pre>
+<ol start="4" type="1">
+<li>Specify the sector on disk</li>
+</ol>
+<pre><code>Start? 2048s</code></pre>
+<ol start="5" type="1">
+<li>Specify where the new partition will end</li>
+</ol>
+<pre><code>End? 1000MB</code></pre>
+<ol start="6" type="1">
+<li><p>Exit using <code>quit</code></p></li>
+<li><p>Run the <strong>udevadm settle</strong> for the system detect the new partition</p></li>
+</ol>
+<p><em>Option</em>: if we have all the details we can use only one command to perform all actions</p>
+<pre><code>[root@host ~]# parted /dev/vdb mkpart primary xfs 2048s 1000MB</code></pre>
+<p><br></p>
+<p><strong>Creating GPT Partitions</strong></p>
+<ol type="1">
+<li>Specificy the disk device to create the partition on</li>
+</ol>
+<pre><code># parted /dev/vdb</code></pre>
+<ol start="2" type="1">
+<li>Use the <strong>mkpart</strong> to start creating the new partition, with GPT each partition is given a <em>name</em></li>
+</ol>
+<pre><code>(parted) mkpart
+Partition name?  []? usersdata</code></pre>
+<ol start="3" type="1">
+<li>Indicate the type</li>
+</ol>
+<pre><code>File system type? [ext2]? xfs</code></pre>
+<ol start="4" type="1">
+<li>Specify the sector on disk that the new partition starts on</li>
+</ol>
+<pre><code>Start? 2048s</code></pre>
+<ol start="5" type="1">
+<li>Specify the end</li>
+</ol>
+<pre><code>End? 1000MB</code></pre>
+<ol start="6" type="1">
+<li><p>Exit using <code>quit</code></p></li>
+<li><p>Run the <strong>udevadm settle</strong> for the system detect the new partition</p></li>
+</ol>
+<p><em>Option</em>: if we have all the details we can use only one command to perform all actions</p>
+<pre><code>[root@host ~]# parted /dev/vdb mkpart usersdata xfs 2048s 1000MB</code></pre>
+<p><br></p>
+<p><strong>Deleting Partitions</strong></p>
+<ol type="1">
+<li>Specify the disk</li>
+</ol>
+<pre><code>[root@host ~]# parted /dev/vdb</code></pre>
+<ol start="2" type="1">
+<li>Identify the partition number of the partition to delete</li>
+</ol>
+<pre><code>(parted) print
+</code></pre>
+<ol start="3" type="1">
+<li>Delete using <code>rm</code> subcomand</li>
+</ol>
+<p><em>The rm subcommand immediately deletes the partition from the partition table on the disk.</em></p>
+<pre><code>(parted) rm &lt;number&gt;</code></pre>
+<ol start="4" type="1">
+<li>Exit using <code>quit</code></li>
+</ol>
+<p><br></p>
+<p><strong>Creating File Systems</strong></p>
+<ul>
+<li>Check if <code>fdisk</code> for MBR and <code>gdisk</code> for GPT are installed</li>
+</ul>
+<pre><code>$ which fdisk
+
+# check the package
+$ rpm -qf /sbin/fdisk
+
+
+# install gdisk
+yum -y install gdisk
+</code></pre>
+<ul>
+<li>Sample of using <strong>gdisk</strong></li>
+</ul>
+<pre><code>$ gdisk /dev/vdd
+</code></pre>
+<ul>
+<li><p><code>?</code> : help</p></li>
+<li><p><code>p</code> : print</p></li>
+<li><p><code>n</code> : new partition</p></li>
+<li><p>Specify the partition number, First sector and Last sector or size</p></li>
+<li><p>Specify the GUID Label</p>
+<ul>
+<li><code>L</code> : show all label codes</li>
+</ul></li>
+<li><p>print to check</p></li>
+<li><p><code>c</code> : change the partition name</p></li>
+<li><p><code>w</code> : write</p></li>
+<li><p>Confirm</p></li>
+<li><p>Check with <code>lsblk</code></p></li>
+<li><p>Create the file system using <strong>mkfs.xfs</strong></p></li>
+</ul>
+<pre><code>$ mkfs.xfs /dev/vdb1</code></pre>
+<ul>
+<li>To check the file system creation using <strong>blkid</strong> will show the <em>UUID</em></li>
+</ul>
+<pre><code>$ blkid</code></pre>
+<ul>
+<li>To mount
+<ul>
+<li>temporarily mount</li>
+</ul>
+<pre><code>mount /dev/vdb1 /mnt</code></pre>
+<ul>
+<li>Persistently mount
+<ol type="1">
+<li>update <strong>/etc/fstab</strong></li>
+<li>Reload the daemon <code>systemctl daemon-reload</code></li>
+<li>check fs <code>lsblk --fs</code></li>
+<li>create the dir <code>mkdir &lt;dir&gt;</code></li>
+<li>mount the fs <code>mount &lt;fs&gt;</code></li>
+</ol></li>
+</ul></li>
+</ul>
+<p><strong>Add label to FS</strong></p>
+<pre><code>tune2fs -L &lt;label&gt; /dev/sda&lt;number&gt;</code></pre>
+<p><strong>Show dump device</strong></p>
+<pre><code>xxd -l 512 /dev/sda | less</code></pre>
+</section>
+<section id="managing-swap-space" class="level3">
+<h3 class="anchored" data-anchor-id="managing-swap-space">Managing Swap Space</h3>
+<p>A <em>swap space</em> is an area of a disk under the control of the Linux kernel memory management subsystem. The kernel uses swap space to supplement the system RAM by holding inactive pages of memory. The combined system RAM plus swap space is called <em>virtual memory</em>.</p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="img/swap.png" class="img-fluid" style="width:90.0%"></p>
+</div>
+</div>
+<p><br></p>
+<p><strong>Creating a Swap Space</strong></p>
+<ul>
+<li>Create a partition with a file system type of <strong>linux-swap</strong></li>
+<li>Run <code>udevadm settle</code></li>
+<li>Formatting the device</li>
+</ul>
+<pre><code>mkswap /dev/vdb2</code></pre>
+<ul>
+<li>Add on <strong>/etc/fstab</strong></li>
+</ul>
+<pre><code>#sample
+UUID=39e2667a-9458-42fe-9665-c5c854605881  swap  swap  defaults  0 0</code></pre>
+<ul>
+<li>Activate the swap</li>
+</ul>
+<pre><code>swappon /dev/vdb2
+
+# activate all the swap spaces
+swapon -a
+
+# check swap
+swapon -s
+</code></pre>
+<ul>
+<li>Setting Swap Space Priority
+<ul>
+<li>default is <strong>-2</strong></li>
+<li>Update <strong>/etc/fstab</strong> and specify <strong>pri=priority number</strong> instead of defaults</li>
+</ul></li>
+</ul>
+</section>
+</section>
+<section id="managing-logical-volumes" class="level2">
+<h2 class="anchored" data-anchor-id="managing-logical-volumes">Managing Logical Volumes</h2>
+<section id="creating-logical-volumes" class="level3">
+<h3 class="anchored" data-anchor-id="creating-logical-volumes">Creating Logical Volumes</h3>
+<p>Using Logical volumes is easier to manage disk space, we can allocate to logical volume free space from volume group and file system can be resized</p>
+<p>LVM Definitions</p>
+<p><em>Physical devices</em></p>
+<ul>
+<li>Storage devices used to save data stored in a lofical volume</li>
+<li>Could be a disk partition, whole disk, RAID arrays or SAN Disk</li>
+<li>Device must be initialized as an LVM</li>
+</ul>
+<p><em>Physical volumes (PVs)</em></p>
+<ul>
+<li>“Physical” storage used with LVM</li>
+<li>We must initilize a device as a physical volume before use as LVM</li>
+<li>PV can only be allocated to a single VG</li>
+</ul>
+<p><em>Volume group (VGs)</em></p>
+<ul>
+<li><strong>Storage pool</strong> made up of one or more physical volumes</li>
+<li>A VG can consiste of unused space an any number of logical Volumes</li>
+</ul>
+<p><em>Logical volumes (LVs)</em></p>
+<ul>
+<li>Create from free physical extents in a volume group and provide the storage used by applications, users and OS</li>
+<li>Collection of logical extents (LEs), which map to physical extents</li>
+</ul>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="img/logical_volumes.png" class="img-fluid" style="width:90.0%"></p>
+</div>
+</div>
+<p><br></p>
+<p><strong>Steps to create logical volumes</strong></p>
+<p>Summary: 1. Create partition 2. pvcreate 3. vgcreate 4. lvcreate 5. mkfs or mkswap 6. mount</p>
+<ol type="1">
+<li><p>Use <strong>lsblk</strong>, <strong>blkid</strong> or <strong>cat /proc/partition</strong> to identify the devices</p></li>
+<li><p>Prepare the physical device</p></li>
+</ol>
+<ul>
+<li>Use <strong>parted</strong>, <strong>gdisk</strong> or <strong>fdisk</strong> tp create a new partition for use with LVM</li>
+<li>Type of <strong>Linux LVM</strong> on LVM partitions</li>
+<li>Use <strong>0x8e</strong> for MBR</li>
+<li>Use <strong>partprobe</strong> to register the new partition with the kernel</li>
+</ul>
+<ol start="3" type="1">
+<li>Create a physical volume</li>
+</ol>
+<ul>
+<li><strong>pvcreate</strong> to label the partition as a physical volume, it divides the physical volume into physical extents (PEs) of fixed size of 4MB block.</li>
+</ul>
+<pre><code>pvcreate /dev/vdb2 /dev/vdb1</code></pre>
+<ol start="4" type="1">
+<li>Create the volume group</li>
+</ol>
+<ul>
+<li><strong>vgcreate</strong> used to collect one or more physical volumes into a volume group. It is equivalent of hard disk</li>
+<li><code>-s</code> option specify the extend size</li>
+</ul>
+<pre><code>vgcreate vg01 /dev/vdb2 /dev/vdb1 -s 4M</code></pre>
+<p><em>This creates a VG called vg01 that is the combined size, in PE units, of the two PVs /dev/vdb2 and /dev/vdb1</em></p>
+<ol start="5" type="1">
+<li>Create a logical volume</li>
+</ol>
+<ul>
+<li>Use <strong>lvcreate</strong> to create a new logical volume from available physical extents in a volume group
+<ul>
+<li><code>-n</code> : to set the LV name</li>
+<li><code>-L</code> : to set the LV size in bytes</li>
+<li><code>-l</code> : to set the LV size in extents</li>
+</ul></li>
+</ul>
+<pre><code>lvcreate -n lv01 -L 700M vg01</code></pre>
+<ol start="6" type="1">
+<li>Add the file system</li>
+</ol>
+<ul>
+<li>Use <strong>mkfs</strong> to create an <strong>XFS</strong> file system on the new logical volume</li>
+</ul>
+<pre><code># create FS
+mkfs -t xfs /dev/vg01/lv01
+
+# create dir mount point
+mkdir /mnt/data
+
+# Update /etc/fstab
+/dev/vg01/lv01 /mnt/data xfs defaults 1 2
+
+# mount
+mount /mnt/data
+</code></pre>
+<p><br></p>
+<p><strong>Remove a Logical Volume</strong></p>
+<ol type="1">
+<li>Umount the fs and remove the info from /etc/fstab</li>
+</ol>
+<pre><code>umount /mnt/data</code></pre>
+<ol start="2" type="1">
+<li>Remove the logical volume</li>
+</ol>
+<pre><code>lvremove /dev/vg01/lv01
+</code></pre>
+<ol start="3" type="1">
+<li>Remove the volume group</li>
+</ol>
+<pre><code>vgremove vg01</code></pre>
+<ol start="4" type="1">
+<li>Remove the physical volumes</li>
+</ol>
+<pre><code>pvremove /dev/vdb2 /dev/vdb1</code></pre>
+<p><br></p>
+<p><strong>Review LVM Status Info</strong></p>
+<ul>
+<li>Physical Volumes</li>
+</ul>
+<pre><code>pvdisplay /dev/vdb1</code></pre>
+<ul>
+<li>Volumes Groups</li>
+</ul>
+<pre><code>vgdisplay vg01</code></pre>
+<ul>
+<li>Logical Volumes</li>
+</ul>
+<pre><code>lvdisplay /dev/vg01/lv01</code></pre>
+</section>
+<section id="extending-and-reducing-logical-volumes" class="level3">
+<h3 class="anchored" data-anchor-id="extending-and-reducing-logical-volumes">Extending and Reducing Logical Volumes</h3>
+<p><strong>Extending Volume groups</strong> : We can add more disk space to a volume group by adding additional physical volumes. Then assign the new physical extents to logical volumes.</p>
+<p><strong>Reducing the volume group</strong> : We also can remove unused physical volume from a volume group * First use <code>pvmove</code> to move data from extents on one physical volume to extents on another physical extents</p>
+<p><br></p>
+<p><strong>Extending a Volume group</strong></p>
+<ol type="1">
+<li>Prepare the physical device and create the physical volume</li>
+</ol>
+<pre><code>[root@host ~]# parted -s /dev/vdb mkpart primary 1027MiB 1539MiB
+[root@host ~]# parted -s /dev/vdb set 3 lvm on
+[root@host ~]# pvcreate /dev/vdb3</code></pre>
+<p><em>A PV only needs to be created if there are no PVs free to extend the VG.</em></p>
+<ol start="2" type="1">
+<li>Use <strong>vgextend</strong> to add the new physical volume to the volume group</li>
+</ol>
+<pre><code>[root@host ~]# vgextend vg01 /dev/vdb3</code></pre>
+<ol start="3" type="1">
+<li><strong>vgdisplay</strong> to confirm the additional physical extents are available</li>
+</ol>
+<pre><code>[root@host ~]# vgdisplay vg01</code></pre>
+<p><em>Inspect the <strong>Free PE / Size</strong></em></p>
+<p>Usually after that you allocated the new space on FS, the <code>-r</code> option will extend the file system</p>
+<pre><code>lvextend -r -L 100G /dev/volume_name/lv_name</code></pre>
+<ul>
+<li>To allocated all free space can use <code>-l +100%FREE</code></li>
+</ul>
+<p><br></p>
+<p><strong>Reducing a Volume Group</strong></p>
+<ol type="1">
+<li>Use <strong>pvmode PV_DEVICE_NAME</strong> to relocate any physical extents</li>
+</ol>
+<pre><code>[root@host ~]# pvmove /dev/vdb3</code></pre>
+<ul>
+<li><em>This command moves the PEs from /dev/vdb3 to other PVs with free PEs in the same VG.</em></li>
+<li><em>Always backup the data before <strong>pvmove</strong></em></li>
+</ul>
+<ol start="2" type="1">
+<li>Reduce the volume using <strong>vgreduce</strong></li>
+</ol>
+<pre><code>[root@host ~]# vgreduce vg01 /dev/vdb3</code></pre>
+<p><em>This removes the /dev/vdb3 PV from the vg01 VG and it can now be added to another VG. Alternatively, <strong>pvremove</strong> can be used to permanently stop using the device as a PV</em></p>
+<p><br></p>
+<p><strong>Extending a Logical Volume and XFS File System</strong></p>
+<ol type="1">
+<li>Verify that the volume group has space available.</li>
+</ol>
+<pre><code>[root@host ~]# vgdisplay vg01</code></pre>
+<ol start="2" type="1">
+<li>Extend the logical volume with <strong>lvextendLV_DEVICE_NAME</strong></li>
+</ol>
+<pre><code>[root@host ~]# lvextend -L +300M /dev/vg01/lv01</code></pre>
+<ol start="3" type="1">
+<li>Extend the file system using <strong>xfs_growfs mountpoint</strong></li>
+</ol>
+<pre><code>[root@host ~]# xfs_growfs /mnt/data</code></pre>
+<ol start="4" type="1">
+<li>Verify the new size of file system</li>
+</ol>
+<pre><code>[root@host ~]# df -h /mountpoint</code></pre>
+<p><br></p>
+<p><strong>Extending a Logical Volume and ext4 File System</strong></p>
+<ol type="1">
+<li>Verify that the volume group has space available.</li>
+</ol>
+<pre><code>[root@host ~]# vgdisplay vg01</code></pre>
+<ol start="2" type="1">
+<li>Extend the logical volume with <strong>lvextend LV_DEVICE_NAME</strong></li>
+</ol>
+<pre><code>[root@host ~]# lvextend -L +300M /dev/vg01/lv01</code></pre>
+<ol start="3" type="1">
+<li>Extend the file system</li>
+</ol>
+<pre><code>[root@host ~]# resize2fs /dev/vg01/lv01</code></pre>
+<p><br></p>
+<p><strong>Extend a logical volume and swap space</strong></p>
+<ol type="1">
+<li>Verify that the volume group has space available.</li>
+</ol>
+<pre><code>[root@host ~]# vgdisplay vg01</code></pre>
+<ol start="2" type="1">
+<li>Deactivate the swap space.</li>
+</ol>
+<pre><code>swapoff -v /dev/vgname/lvname</code></pre>
+<ol start="3" type="1">
+<li>Extend the logical volume with <strong>lvextend LV_DEVICE_NAME</strong></li>
+</ol>
+<pre><code>[root@host ~]# lvextend -L +300M /dev/vg01/lv01</code></pre>
+<ol start="4" type="1">
+<li>Format the logical volume as swap space.</li>
+</ol>
+<pre><code>mkswap /dev/vgname/lvname</code></pre>
+<ol start="5" type="1">
+<li>Activate the swap space</li>
+</ol>
+<pre><code>swapon -va /dev/vgname/lvname</code></pre>
+</section>
+</section>
+<section id="implementing-advanced-storage-features" class="level2">
+<h2 class="anchored" data-anchor-id="implementing-advanced-storage-features">Implementing Advanced Storage Features</h2>
+<section id="managing-storage-with-stratis" class="level3">
+<h3 class="anchored" data-anchor-id="managing-storage-with-stratis">Managing Storage with Stratis</h3>
+<blockquote class="blockquote">
+<p><strong>STRATIS</strong> is a new storage-management solution for Linux, runs as a service that manages pools of physical storage devices and transparently creates and manages volumes for the newly created file system.</p>
+</blockquote>
+<ul>
+<li><p>Instead of immediately allocating physical storage space to the file system when it is created, Stratis dynamically allocates that space from the pool as the file system stores more data</p></li>
+<li><p>We can create multiple pools from different storage devices.</p></li>
+<li><p>File systems created by Stratis should only be reconfigured with Stratis tools and commands.</p></li>
+</ul>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="img/stratis.png" class="img-fluid" style="width:90.0%"></p>
+</div>
+</div>
+<p>To use we need to install the <strong>stratis-cli</strong> and <strong>stratisd</strong></p>
+<p><strong>To install Stratis</strong></p>
+<pre><code>[root@host ~]# yum install stratis-cli stratisd
+[root@host ~]# systemctl enable --now stratisd</code></pre>
+<ul>
+<li><strong>Create pools</strong> of one or more block devices using the stratis pool create command.</li>
+</ul>
+<pre><code>[root@host ~]# stratis pool create pool1 /dev/vdb</code></pre>
+<ul>
+<li>To view the list of available pools</li>
+</ul>
+<pre><code>[root@host ~]# stratis pool list</code></pre>
+<ul>
+<li>To add additional block devices to a pool</li>
+</ul>
+<pre><code>[root@host ~]# stratis pool add-data pool1 /dev/vdc</code></pre>
+<ul>
+<li>To view the block devices of a pool</li>
+</ul>
+<pre><code>[root@host ~]# stratis blockdev list pool1</code></pre>
+<ul>
+<li>To create a file system from a pool</li>
+</ul>
+<pre><code>[root@host ~]# stratis filesystem create pool1 fs1</code></pre>
+<ul>
+<li>To view the list of available file systems</li>
+</ul>
+<pre><code>[root@host ~]# stratis filesystem list</code></pre>
+<ul>
+<li>To create a snapshot</li>
+</ul>
+<pre><code>[root@host ~]# stratis filesystem snapshot pool1 fs1 snapshot1</code></pre>
+<ul>
+<li>To mount the Stratis file system persistently</li>
+</ul>
+<pre><code># get UID
+[root@host ~]# lsblk --output=UUID /stratis/pool1/fs1
+
+# add on /etc/fstab
+UUID=31b9363b-add8-4b46-a4bf-c199cd478c55 /dir1 xfs defaults,x-systemd.requires=stratisd.service 0 0</code></pre>
+<p><em>The <strong>x-systemd.requires=stratisd.service</strong> mount option delays mounting the file system until after <strong>systemd</strong> starts the <strong>stratisd.service</strong> during the boot process</em></p>
+</section>
+<section id="compressing-and-deduplicating-storage-with-vdo" class="level3">
+<h3 class="anchored" data-anchor-id="compressing-and-deduplicating-storage-with-vdo">Compressing and Deduplicating Storage with VDO</h3>
+<p>Virtual Data Optimizer (VDO) is a Linux device mapper driver that reduces disk space usage on block devices, and minimizes the replication of data.</p>
+<ul>
+<li><em>Kernel modules</em>
+<ul>
+<li><strong>kvdo</strong> : Control data compression</li>
+<li><strong>uds</strong> : Deduplication</li>
+</ul></li>
+</ul>
+<p><br></p>
+<p>VDO <strong>phases to reduce</strong> the footprint on storage</p>
+<ol type="1">
+<li><em>Zero-block Elimination</em> filter out data that contain only zeros</li>
+<li><em>Deduplication</em> eliminate redudant blocks</li>
+<li><em>Compression</em> the <strong>kvdo</strong> compress the data block using LZ4</li>
+</ol>
+<p><br></p>
+<ul>
+<li>Install the <em>vdo</em> and <em>kmod-kvdo</em></li>
+</ul>
+<pre><code>[root@host ~]# yum install vdo kmod-kvdo</code></pre>
+<ul>
+<li>Check status of vdo service</li>
+</ul>
+<pre><code>systemctl status vdo</code></pre>
+<ul>
+<li>Creating VDO volume</li>
+</ul>
+<pre><code>[root@host ~]# vdo create --name=vdo1 --device=/dev/vdd --vdoLogicalSize=50G</code></pre>
+<ul>
+<li>Analyzing a VDO Volume</li>
+</ul>
+<pre><code>[root@host ~]# vdo status --name=vdo1</code></pre>
+<ul>
+<li>Display the list of VDO</li>
+</ul>
+<pre><code>vdo list</code></pre>
+<ul>
+<li>Stop / Start vdo</li>
+</ul>
+<pre><code>vdo stop
+vdo start</code></pre>
+<blockquote class="blockquote">
+<p>When the logical size of a VDO volume is more than the actual physical size, you should proactively monitor the volume statistics to view the actual usage using the <strong>vdostats –verbose</strong> command.</p>
+</blockquote>
+<pre><code>vdostats --human-readable</code></pre>
+<p><br></p>
+<p><strong>TIPS</strong></p>
+<ul>
+<li>To test we might need to create a 2G file, below a sample</li>
+</ul>
+<pre><code>dd if=/dev/urandom of=&lt;path&gt;/&lt;file_name&gt; bs=1M count=2048</code></pre>
+<ul>
+<li>If made a mistake on fstab and need to access the server with root and root home dir is mounted as read only we can remount using below command</li>
+</ul>
+<pre><code>mount -o remount, rw /</code></pre>
+</section>
+</section>
+<section id="accessing-network-attached-storage" class="level2">
+<h2 class="anchored" data-anchor-id="accessing-network-attached-storage">Accessing Network-Attached Storage</h2>
+<section id="mounting-network-attached-storage-with-nfs" class="level3">
+<h3 class="anchored" data-anchor-id="mounting-network-attached-storage-with-nfs">Mounting Network-Attached Storage with NFS</h3>
+<p>NFS servers export shares (directories). NFS clients mount an exported share to a local mount point (directory), which must exist. NFS shares can be mounted a number of ways:</p>
+<ul>
+<li>Manually, using the <strong>mount</strong> command</li>
+<li>Automatically at boot time using <strong>/etc/fstab</strong></li>
+<li>On demand, using <strong>autofs</strong> or <strong>systemd.automount</strong>.</li>
+</ul>
+<p><br></p>
+<p><strong>Mounting NFS Shares</strong></p>
+<ol type="1">
+<li><strong>Identify</strong> NFS Shares</li>
+</ol>
+<pre><code>[user@host ~]$ sudo mkdir mountpoint
+[user@host ~]$ sudo mount serverb:/ mountpoint
+[user@host ~]$ sudo ls mountpoint</code></pre>
+<ol start="2" type="1">
+<li><strong>Mount point</strong> use mkdir to create a mount point</li>
+</ol>
+<pre><code>[user@host ~]$ mkdir -p mountpoint</code></pre>
+<ol start="3" type="1">
+<li><strong>Mount</strong></li>
+</ol>
+<p><em>Temporarily</em></p>
+<pre><code>[user@host ~]$ sudo mount -t nfs -o rw,sync serverb:/share mountpoint</code></pre>
+<ul>
+<li><code>-t nfs</code> : file system type for NFS Share</li>
+<li><code>-o sync</code>: immediately sync write operations with server</li>
+</ul>
+<p><em>Persistently</em></p>
+<ul>
+<li>Configure <strong>/etc/fstab</strong></li>
+</ul>
+<pre><code>[user@host ~]$ sudo vim /etc/fstab
+serverb:/share /mountpoint nfs rw,soft 0 0</code></pre>
+<ul>
+<li>Mount the NFS Share</li>
+</ul>
+<pre><code>[user@host ~]$ sudo mount /mountpoint</code></pre>
+<p><strong>Unmounting NFS Shares</strong></p>
+<pre><code>[user@host ~]$ sudo umount mountpoint</code></pre>
+</section>
+<section id="automounting-network-attached-storage" class="level3">
+<h3 class="anchored" data-anchor-id="automounting-network-attached-storage">Automounting Network-Attached Storage</h3>
+<blockquote class="blockquote">
+<p>The automounter is a service (<strong>autofs</strong>) that automatically mounts NFS shares <em>“on-demand”</em>, and will automatically unmount NFS shares when they are no longer being used.</p>
+</blockquote>
+<ul>
+<li>Create an automount</li>
+</ul>
+<ol type="1">
+<li>Install <em>autofs</em></li>
+</ol>
+<pre><code>[user@host ~]$ sudo yum install autofs</code></pre>
+<ol start="2" type="1">
+<li>Add a <em>master map</em> file to <strong>/etc/auto.master.d</strong></li>
+</ol>
+<pre><code>[user@host ~]$ sudo vim /etc/auto.master.d/demo.autofs
+
+## add
+/shares /etc/auto.demo</code></pre>
+<ol start="3" type="1">
+<li>Create the mapping files</li>
+</ol>
+<pre><code>[user@host ~]$ sudo vim /etc/auto.demo
+
+# add
+work -rw,sync serverb:/shares/work</code></pre>
+<ol start="4" type="1">
+<li>Start and enable the automounter service</li>
+</ol>
+<pre><code>[user@host ~]$ sudo systemctl enable --now autofs</code></pre>
+<p><br></p>
+<ul>
+<li>Direct Maps</li>
+</ul>
+<p><em>Direct maps are used to map an NFS share to an existing absolute path mount point.</em></p>
+<ul>
+<li>To use the master map file should be like :</li>
+</ul>
+<pre><code>/- /etc/auto.direct
+</code></pre>
+<ul>
+<li>The content for the <strong>/etc/auto.direct</strong> will be :</li>
+</ul>
+<pre><code>/mnt/docs -rw,sync serverb:/shares/docs</code></pre>
+<p><br></p>
+<ul>
+<li>Indirect Wildcard Maps</li>
+</ul>
+<pre><code>* -rw,sync serverb:/shares/&amp;</code></pre>
+</section>
+</section>
+<section id="controlling-the-boot-process" class="level2">
+<h2 class="anchored" data-anchor-id="controlling-the-boot-process">Controlling The Boot Process</h2>
+<section id="selecting-the-boot-target" class="level3">
+<h3 class="anchored" data-anchor-id="selecting-the-boot-target">Selecting the boot target</h3>
+<p><strong>Describing the Red Hat Enterprise Linux 8 Boot Process</strong></p>
+<ul>
+<li>The machine is powered on the UEFI or BIOS runs <em>Power On Self Test (POST)</em> and start, <strong>F2</strong> or some system <strong>Esc</strong> usually to access configuartion and <strong>E</strong> to edit</li>
+<li>Firmware search for a bootable device</li>
+<li>The firmware read a boot loader and passes control of system to the boot loader, in RHEL 8 <em>GRand Unified Bootloader version 2 (GRUB2)</em> configured using <strong>grub2-install</strong></li>
+<li>GRUB2 load the config from <strong>/boot/grub2/grub.cfg</strong> and display the menu, where we can select the kernel. Configured using the <strong>/etc/grub.d/</strong> directory, the <strong>/etc/default/grub</strong> file, and the <strong>grub2-mkconfig</strong> command to generate the <strong>/boot/grub2/grub.cfg</strong> file</li>
+<li>After timeout or select the kernel boot loader load the kernel and <strong>initramfs</strong> set of initialization configured on <strong>/etc/dracut.conf.d/</strong> using <strong>dracut</strong> and <strong>lsinitrd</strong> command</li>
+<li>Kernel initializes all hardware and execute the <strong>/sbin/init</strong> from <strong>initramfs</strong> as PID 1.</li>
+<li>The <strong>systemd</strong> execute all instances for the <strong>initrd.target</strong> such as mount root file system.</li>
+</ul>
+<p><strong>Rebooting and Shutting Down</strong></p>
+<ul>
+<li><p><code>systemctl poweroff</code> : Stops all running services, unmounts all file system and power down the system</p></li>
+<li><p><code>systemctl reboot</code> : Stops all running services, unmount al file system and then reboot the system</p></li>
+<li><p><code>systemctl halt</code> : Stop the system, but do not power off the system</p></li>
+</ul>
+<p><strong>Selecting a System Target</strong></p>
+<ul>
+<li><strong>systemd</strong> targets is a set of systemd units that system should start to reach the desired state
+<ul>
+<li><strong>graphical.target</strong> : supports multiple users, graphical-and text logins</li>
+<li><strong>multi-user.target</strong>: system supports multiple users, text logins only</li>
+<li><strong>rescue.target</strong> : <strong>sulogin</strong> prompt, basic system initialization completed</li>
+<li><strong>emergency.target</strong>: <strong>sulogin</strong> prompt, <strong>initramfs</strong> pivot complete and system root mounted on <strong>/</strong> read only</li>
+</ul></li>
+<li>List dependencies for graphical.target</li>
+</ul>
+<pre><code>systemctl list-dependencies graphical.target | grep target
+
+# output
+
+graphical.target
+● └─multi-user.target
+●   ├─basic.target
+●   │ ├─paths.target
+●   │ ├─slices.target
+●   │ ├─sockets.target
+●   │ ├─sysinit.target
+●   │ │ ├─cryptsetup.target
+●   │ │ ├─local-fs.target
+●   │ │ └─swap.target
+●   │ └─timers.target
+●   ├─getty.target
+●   └─remote-fs.target</code></pre>
+<ul>
+<li>To list the available targets :</li>
+</ul>
+<pre><code>systemctl list-units --type=target --all  </code></pre>
+<ul>
+<li>Switch to a different target using <strong>systemctl isolate</strong></li>
+</ul>
+<pre><code>[root@host ~]# systemctl isolate multi-user.target</code></pre>
+<p><em>Isolating a target stops all services not required by that target (and its dependencies), and starts any required services not yet started</em></p>
+<ul>
+<li>Get the default target</li>
+</ul>
+<pre><code>[root@host ~]# systemctl get-default</code></pre>
+<ul>
+<li>Setting a Default Target</li>
+</ul>
+<pre><code>[root@host ~]# systemctl set-default graphical.target</code></pre>
+<ul>
+<li>To select a different target at boot time
+<ol type="1">
+<li>Boot the system</li>
+<li>Interrupt the boot loader</li>
+<li>Move cursor to kernel entry</li>
+<li>Press <strong>e</strong> to edit</li>
+<li>Move the cursos to the line that starts with <strong>linux</strong></li>
+<li>append the option for instance <strong>systemd.unit=emergency.target</strong></li>
+<li>Ctrl+x to boot with changes</li>
+</ol></li>
+</ul>
+</section>
+<section id="resetting-the-root-password" class="level3">
+<h3 class="anchored" data-anchor-id="resetting-the-root-password">Resetting the Root Password</h3>
+<p><strong>Option 1</strong></p>
+<ul>
+<li>Boot the system using a Live CD</li>
+<li>Mount the root file system</li>
+<li>Edit <strong>/etc/shadow</strong></li>
+</ul>
+<p><strong>Option 2</strong></p>
+<ul>
+<li>Reboot the system</li>
+<li>Interrupt the boot loader</li>
+<li>Move the cursor to the kernel</li>
+<li>Press <strong>e</strong> to edit</li>
+<li>Move the cursor to kernel command line, starting with <strong>linux</strong></li>
+<li>Append <strong>rd.break</strong></li>
+<li>Press <strong>Ctrl+x</strong> to boot</li>
+<li>System will presents a root shell</li>
+<li>Change the root file system to read/write <code>switch_root:/# mount -o remount,rw /sysroot</code></li>
+<li>Switch into a <strong>chroot</strong> <code>switch_root:/# chroot /sysroot</code></li>
+<li>Set the new password <code>passwd root</code></li>
+<li>run <code>sh-4.4# touch /.autorelabel</code> to include <strong>/etc/shadow</strong></li>
+<li>Exit;Exit to system continue the boot</li>
+</ul>
+<p><strong>Option 3</strong></p>
+<ul>
+<li>Reboot the system</li>
+<li>Interrupt the boot loader</li>
+<li>Move the cursor to the kernel</li>
+<li>Press <strong>e</strong> to edit</li>
+<li>Move the cursor to kernel command line, starting with <strong>linux</strong></li>
+<li>Enable the debug using adding <code>systemd.debug-shell</code> option</li>
+<li>Press Ctrl+x to boot</li>
+<li>On login page <strong>Crtl+Alt+F9</strong> and we will be on root shell</li>
+<li>Change the password</li>
+<li>Remove the debug <code>sudo systemctl stop debug-shell.service</code></li>
+</ul>
+</section>
+<section id="repairing-file-system-issues-at-boot" class="level3">
+<h3 class="anchored" data-anchor-id="repairing-file-system-issues-at-boot">Repairing File system Issues at Boot</h3>
+<blockquote class="blockquote">
+<p>Errors in <strong>/etc/fstab</strong> and corrupt file systems can stop a system from booting.</p>
+</blockquote>
+<p>Common File system issues:</p>
+<ul>
+<li>Corrupt file system</li>
+<li>Nonexistent device or UUID referenced in /etc/fstab</li>
+<li>Nonexistent mount point in / etc/fstab</li>
+<li>Incorrect mount option specified in /etc/fstab</li>
+</ul>
+</section>
+<section id="create-or-alter-grub" class="level3">
+<h3 class="anchored" data-anchor-id="create-or-alter-grub">Create or alter grub</h3>
+<p>The default path is <strong>/etc/default/grub</strong></p>
+<pre><code>grup2-mkconfig -o /boot/grub2/grub.cfg
+
+reboot</code></pre>
+</section>
+</section>
+<section id="managing-network-security" class="level2">
+<h2 class="anchored" data-anchor-id="managing-network-security">Managing Network Security</h2>
+<section id="managing-server-firewall" class="level3">
+<h3 class="anchored" data-anchor-id="managing-server-firewall">Managing Server Firewall</h3>
+<ul>
+<li><p><strong>netfilter</strong> allows other kernel modules to interface with kernel’s network stack. Any incoming, outgoing, or forwarded network packet can be inspected, modified, dropped, or routed programmatically before reaching user space components or applications.</p></li>
+<li><p><strong>nftables</strong> : a new filter and packet classification subsystem that has enhanced portions of netfilter’s code. Nftables uses the single <strong>nft</strong> user-space utility, allowing all protocol management to occur through a single interface, eliminating historical contention caused by diverse front ends and multiple netfilter interfaces.</p></li>
+<li><p><strong>firewalld</strong> : a dynamic firewall manager. With firewalld, firewall management is simplified by classifying all network traffic into zones. Each zone has its own list of ports and services that are either open or closed.</p></li>
+</ul>
+<p><strong>Pre-defined Zones</strong></p>
+<p><em>all zones permit any incoming traffic which is part of a communication initiated by the system, and all outgoing traffic</em></p>
+<ul>
+<li>trusted</li>
+<li>home</li>
+<li>internal</li>
+<li>work</li>
+<li>public</li>
+<li>external</li>
+<li>dmz</li>
+<li>block</li>
+<li>drop</li>
+</ul>
+<p><strong>Pre-defined Services</strong></p>
+<p><em>These service definitions help you identify particular network services to configure.</em></p>
+<ul>
+<li><p>ssh</p></li>
+<li><p>dhcpv6-client</p></li>
+<li><p>ipp-client</p></li>
+<li><p>samba-client</p></li>
+<li><p>mdns</p></li>
+<li><p>To list services:</p></li>
+</ul>
+<pre><code>firewall-cmd --get-services</code></pre>
+<p><strong>Configure the Firewall from the Command Line</strong></p>
+<p><strong>firwewall-cmd</strong> interacts with <strong>firewalld</strong> dynamic firewall manager, most of commands will work on the runtime config, unless the <strong>–permanent</strong> option is specified, we also must activate the setting using <strong>firewall-cmd –reload</strong></p>
+<p>Some commanda:</p>
+<ul>
+<li>–get-default-zone : query the current default zone</li>
+<li>–set-default-zone=ZONE</li>
+<li>–get-zones</li>
+<li>–get-active-zones</li>
+<li>–add-source=CIDR [–zone=ZONE]</li>
+<li>–remove-source=CIDR [–zone=ZONE]</li>
+<li>–add-interface=INTERFACE [–zone=ZONE]</li>
+<li>—change-interface=INTERFACE [–zone=ZONE]</li>
+<li>–list-all [–zone=ZONE]</li>
+<li>–list-all-zones</li>
+<li>–reload</li>
+</ul>
+<p>Sample of commands setting the default zone to <strong>dmz</strong>, assign all traffic coming from the <strong>192.168.0.0/24</strong> network to the <strong>internal</strong> zone, and open the network ports from the <strong>mysql</strong> service on the <strong>internal</strong> zone</p>
+<pre><code>[root@host ~]# firewall-cmd --set-default-zone=dmz
+[root@host ~]# firewall-cmd --permanent --zone=internal --add-source=192.168.0.0/24
+[root@host ~]# firewall-cmd --permanent --zone=internal --add-service=mysql
+[root@host ~]# firewall-cmd --reload</code></pre>
+</section>
+<section id="controlling-selinux-port-labeling" class="level3">
+<h3 class="anchored" data-anchor-id="controlling-selinux-port-labeling">Controlling SELinux Port Labeling</h3>
+<blockquote class="blockquote">
+<p>One of the methods that SELinux uses for controlling network traffic is labeling network ports</p>
+</blockquote>
+<ul>
+<li>Get list of all current port label assignements</li>
+</ul>
+<pre><code>semanage port -l</code></pre>
+<ul>
+<li>To add a port to an existing port label (type)</li>
+</ul>
+<pre><code>semanage port -a -t port_label -p tcp|udp PORTNUMBER</code></pre>
+<ul>
+<li>To allow a gopher service to listen on port 71/TCP</li>
+</ul>
+<pre><code>semanage port -a -t gopher_port_t -p tcp 71</code></pre>
+<ul>
+<li>To remove the binding of port 71/TCP to gopher_port_t:</li>
+</ul>
+<pre><code>semanage port -d -t gopher_port_t -p tcp 71</code></pre>
+<ul>
+<li>To view local changes to the default policy</li>
+</ul>
+<pre><code>semanage port -l -C</code></pre>
+<ul>
+<li>To modify port 71/TCP from gopher_port_t to http_port_t</li>
+</ul>
+<pre><code>semanage port -m -t http_port_t -p tcp 71</code></pre>
+<ul>
+<li>Service specific SELinux man pages found in the <em>selinux-policy-doc</em> package include documentation on SELinux types, booleans, and port types. If these man pages are not yet installed on your system, follow this procedure:</li>
+</ul>
+<pre><code>[root@host ~]# yum -y install selinux-policy-doc
+[root@host ~]# man -k _selinux</code></pre>
+</section>
+</section>
+<section id="installing-red-hat-enterprise-linux" class="level2">
+<h2 class="anchored" data-anchor-id="installing-red-hat-enterprise-linux">Installing Red Hat Enterprise Linux</h2>
+<section id="installing-red-hat-enterprise-linux-1" class="level3">
+<h3 class="anchored" data-anchor-id="installing-red-hat-enterprise-linux-1">Installing Red Hat Enterprise Linux</h3>
+<p>Supported processor architectures: x86 64-bit (AMD and Intel), IBM Power Systems (<em>Little Endian</em>), IBM Z, and ARM 64-bit.</p>
+<p>After downloading, create bootable installation media based on the <a href="https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html-single/performing_a_standard_rhel_installation/index#making-media_preparing-for-your-installation">instructions</a></p>
+</section>
+<section id="automating-installation-with-kickstart" class="level3">
+<h3 class="anchored" data-anchor-id="automating-installation-with-kickstart">Automating Installation with Kickstart</h3>
+<ul>
+<li>Text file with specification of how the machine should be configured</li>
+<li>Using <em>Kickstart</em>, you specify everything Anaconda needs to complete an installation, including disk partitioning, network interface configuration, package selection, and other parameters, in a Kickstart text file.</li>
+<li>The <em>%packages</em> section specifies the software to be installed on the target system</li>
+<li>There are two additional sections, %pre and %post, which contain shell scripting commands that further configure the system.</li>
+<li>You must specify the primary Kickstart commands before the <em>%pre</em>, <em>%post</em>, and <em>%packages</em> sections, but otherwise, you can place these sections in any order in the file</li>
+</ul>
+<p><em>Sample:</em></p>
+<pre><code>#version=RHEL8
+ignoredisk --only-use=vda
+# System bootloader configuration
+bootloader --append="console=ttyS0 console=ttyS0,115200n8 no_timer_check
+net.ifnames=0 crashkernel=auto" --location=mbr --timeout=1 --boot-drive=vda
+# Clear the Master Boot Record
+zerombr
+# Partition clearing information
+clearpart --all --initlabel
+# Use text mode install
+text
+repo --name="appstream" --baseurl=http://classroom.example.com/content/rhel8.2/
+x86_64/dvd/AppStream/
+# Use network installation
+url --url="http://classroom.example.com/content/rhel8.2/x86_64/dvd/"
+# Keyboard layouts
+# old format: keyboard us
+
+# new format:
+keyboard --vckeymap=us --xlayouts=''
+# System language
+lang en_US.UTF-8
+# Root password
+rootpw --plaintext redhat
+# System authorization information
+auth --enableshadow --passalgo=sha512
+# SELinux configuration
+selinux --enforcing
+firstboot --disable
+# Do not configure the X Window System
+skipx
+# System services
+services --disabled="kdump,rhsmcertd" --enabled="sshd,rngd,chronyd"
+# System timezone
+timezone America/New_York --isUtc
+# Disk partitioning information
+part / --fstype="xfs" --ondisk=vda --size=10000
+
+%packages
+@core
+chrony
+cloud-init
+dracut-config-generic
+dracut-norescue
+firewalld
+grub2
+kernel
+rsync
+tar
+-plymouth
+%end
+
+
+%post --erroronfail
+# For cloud images, 'eth0' _is_ the predictable device name, since
+# we don't want to be tied to specific virtual (!) hardware
+rm -f /etc/udev/rules.d/70*
+ln -s /dev/null /etc/udev/rules.d/80-net-name-slot.rules
+# simple eth0 config, again not hard-coded to the build hardware
+cat &gt; /etc/sysconfig/network-scripts/ifcfg-eth0 &lt;&lt; EOF
+DEVICE="eth0"
+BOOTPROTO="dhcp"
+ONBOOT="yes"
+TYPE="Ethernet"
+USERCTL="yes"
+PEERDNS="yes"
+IPV6INIT="no"
+EOF
+%end
+</code></pre>
+<ul>
+<li><p>The <a href="https://access.redhat.com/labs/kickstartconfig/">Kickstart Generator website</a> at presents dialog boxes for user inputs, and creates a Kickstart directives text file with the user’s choices. Each dialog box corresponds to the configurable items in the Anaconda installer.</p></li>
+<li><p><strong>ksvalidator</strong> is a utility that checks for syntax errors in a Kickstart file. The <em>pykickstart</em> package provides ksvalidator.</p>
+<ul>
+<li>To find the provides of <strong>ksvalidation</strong></li>
+</ul>
+<pre><code>yum provides */ksvalidator</code></pre>
+<ul>
+<li>We will see the pykickstart and install</li>
+</ul>
+<pre><code>yum -y install pykickstart</code></pre>
+<ul>
+<li>Checking for packages that have the kickstart in the name</li>
+</ul>
+<pre><code>rpm -qad '*kickstart'
+
+...
+...
+/usr/share/doc/python3-kickstart/kickstart-docs.txt
+</code></pre>
+<p><em>In this file <strong>kickstart-docs.txt</strong> we going to have all docs about kickstart</em></p></li>
+<li><p>To boot anaconda and point it to the kickstart file, press <strong>TAB</strong> and add <strong>inst.ks=LOCATION</strong></p></li>
+</ul>
+</section>
+<section id="installing-and-configuring-virtual-machine" class="level3">
+<h3 class="anchored" data-anchor-id="installing-and-configuring-virtual-machine">Installing and Configuring Virtual Machine</h3>
+<blockquote class="blockquote">
+<p>Red Hat Enterprise Linux 8 supports KVM (Kernel-based Virtual Machine), a full virtualization solution built into the standard Linux kernel. KVM can run multiple Windows and Linux guest operating systems</p>
+</blockquote>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="img/kvm.png" class="img-fluid" style="width:90.0%"></p>
+</div>
+</div>
+<p><br></p>
+<ul>
+<li><strong>virsh</strong> command is used to manage KVM</li>
+<li><strong>Red Hat Virtualization (RHV)</strong> provides a centralized web interface that allows administrators to manage an entire virtual infrastructure</li>
+<li><strong>Red Hat OpenStack Platform (RHOSP)</strong> provides the foundation to create, deploy, and scale a public or a private cloud</li>
+</ul>
+<p><br></p>
+<ul>
+<li>Install the virtualizaation tools</li>
+</ul>
+<pre><code>yum module list virt
+yum module install virt</code></pre>
+<ul>
+<li>Verify the system requirements</li>
+</ul>
+<pre><code>virt-host-validate</code></pre>
+<p><br></p>
+<p><strong>To Manage virtual machines with cockpit</strong></p>
+<ul>
+<li>Install the <strong>cockpit-machines</strong> package to add the Virtual Machines menu to Cockpit.</li>
+</ul>
+<pre><code>yum install cockpit-machines</code></pre>
+<ul>
+<li>Start and enable cockpit</li>
+</ul>
+<pre><code>systemctl enable --now cockpit.socket</code></pre>
+</section>
+</section>
+<section id="running-containers" class="level2">
+<h2 class="anchored" data-anchor-id="running-containers">Running Containers</h2>
+<section id="intro" class="level3">
+<h3 class="anchored" data-anchor-id="intro">Intro</h3>
+<p>Containers and Virtual Machines are different in the way they interact with hardware and the underlying operating system</p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="img/container.png" class="img-fluid" style="width:90.0%"></p>
+</div>
+</div>
+<p><strong>Virtualization</strong>:</p>
+<ul>
+<li>Enables multiple operating systems to run simultaneously on a single hardware platform.</li>
+<li>Uses a hypervisor to divide hardware into multiple virtual hardware systems, allowing multiple operating systems to run side by side</li>
+<li>Requires a complete operating system environment to support the application</li>
+</ul>
+<p><strong>Containers</strong>:</p>
+<ul>
+<li>Run directly on the operating system, sharing hardware and OS resources across all containers on the system. This enables applications to stay lightweight and run swiftly in parallel.</li>
+<li>Share the same operating system kernel, isolate the containerized application processes from the rest of the system, and use any software compatible with that kernel</li>
+<li>Require far fewer hardware resources than virtual machines, which also makes them quick to start and stop and reduces storage requirements</li>
+</ul>
+<p><strong>Running Containers from Container Images</strong></p>
+<ul>
+<li>Container images are unchangeable, or immutable, files that include all the required code and dependencies to run a container</li>
+<li>Container images are built according to specifications, such as the Open Container Initiative (OCI) image format specification</li>
+</ul>
+<p><strong>Managing Containers with Podman</strong></p>
+<ul>
+<li><strong>podman</strong> : manage containers and container image</li>
+<li><strong>skopeo</strong> : used to inspect, copy, delete and sign images</li>
+<li><strong>buildah</strong>: used to create new container images</li>
+</ul>
+<p><em>These tools are compatible with the Open Container Initiative (OCI). They can be used to manage any Linux containers created by OCI-compatible container engines, such as Docker</em></p>
+</section>
+<section id="running-a-basic-conatiner" class="level3">
+<h3 class="anchored" data-anchor-id="running-a-basic-conatiner">Running a Basic Conatiner</h3>
+<p><a href="https://access.redhat.com/containers">The Red Hat Container Catalog</a> provides a web-based interface that you can use to search these registries for certified content.</p>
+<ul>
+<li>The Container naming conventions <strong>registry_name/user_name/image_name:tag</strong>
+<ul>
+<li><strong>registry_name</strong> : name of the registry storing the image</li>
+<li><strong>user_name</strong> : represents the user or organization to which the image belongs</li>
+<li><strong>image_name</strong> : must be unique in the user namespace</li>
+<li><strong>tag</strong> : image version</li>
+</ul></li>
+<li>Installing Container Managemnt Tools</li>
+</ul>
+<pre><code>[root@host ~]# yum module install container-tools</code></pre>
+<ul>
+<li>To pull or download the a container the image</li>
+</ul>
+<pre><code>podman pull registry.access.redhat.com/ubi8/ubi:latest</code></pre>
+<ul>
+<li>To retrieval, <code>podman</code> stores images</li>
+</ul>
+<pre><code>podman images</code></pre>
+<ul>
+<li>To run a container from image</li>
+</ul>
+<pre><code>podman run -it registry.access.redhat.com/ubi8/ubi:latest</code></pre>
+<ul>
+<li>To run and delete the image after use using <strong>podman run –rm</strong></li>
+</ul>
+<pre><code>[user@host ~]$ podman run --rm registry.access.redhat.com/ubi8/ubi cat /etc/os-release</code></pre>
+</section>
+<section id="finding-and-managing-container-images" class="level3">
+<h3 class="anchored" data-anchor-id="finding-and-managing-container-images">Finding and Managing Container Images</h3>
+<p>Podman uses a registreis.conf file :</p>
+<pre><code>grep ^[^#] /etc/containers/registreis.conf</code></pre>
+<ul>
+<li><strong>podman info</strong> command displays configuration information for Podman</li>
+</ul>
+<pre><code>podman info</code></pre>
+<ul>
+<li><p>Search command to search conatiner registreis for a specific container image</p>
+<ul>
+<li>–no-trunc : option to see longer image descriptions</li>
+</ul></li>
+</ul>
+<pre><code>podman search registry.redhat.io/rhel8</code></pre>
+<ul>
+<li>Inspect images</li>
+</ul>
+<pre><code>skopeo inspect docker://registry.redhat.io/rhel8/python-36
+
+podman inspect registry.redhat.io/rhel8/python-36</code></pre>
+<ul>
+<li>remove image</li>
+</ul>
+<pre><code>podman rmi registry.redhat.io/rhel8/python-36:latest</code></pre>
+</section>
+<section id="performing-advanced-container-management" class="level3">
+<h3 class="anchored" data-anchor-id="performing-advanced-container-management">Performing Advanced Container Management</h3>
+<ul>
+<li>Mapping Container Hosts Ports to the container using <code>-p</code></li>
+</ul>
+<pre><code>[user@host ~]$ podman run -d -p 8000:8080 registry.redhat.io/rhel8/httpd-24</code></pre>
+<ul>
+<li>List the ports of cntainer</li>
+</ul>
+<pre><code>[user@host ~]$ podman port -a</code></pre>
+<ul>
+<li>Make sure that firewall on container allow external clients</li>
+</ul>
+<pre><code>[root@host ~]# firewall-cmd --add-port=8000/tcp</code></pre>
+<ul>
+<li>Check the logs of container</li>
+</ul>
+<pre><code>podman logs &lt;container id&gt;</code></pre>
+<ul>
+<li>Stop / restart</li>
+</ul>
+<pre><code>podman [stop | restart] &lt;container id&gt;</code></pre>
+<ul>
+<li>Delete container</li>
+</ul>
+<pre><code>podman run &lt;container id&gt;</code></pre>
+<ul>
+<li>Passing parameters with <code>-e</code>, <code>-d</code> to detach, <code>-p</code> to specify ports</li>
+</ul>
+<pre><code>podman run -d --name container_name -e MYSQL_USER=user_name -e MYSQL_PASSWORD=user_password -e MYSQL_DATABASE=database_name -e MYSQL_ROOT_PASSWORD=mysql_root_password -p 3306:3306 registry.redhat.io/rhel8/mariadb-103:1-102
+
+# checking
+mysql -h127.0.0.1 -udupsy -pbongle -P3306
+show databases;</code></pre>
+</section>
+<section id="attaching-persistent-storage-to-a-container" class="level3">
+<h3 class="anchored" data-anchor-id="attaching-persistent-storage-to-a-container">Attaching Persistent Storage to a Container</h3>
+<ul>
+<li>Mounting Volume</li>
+</ul>
+<pre><code>--volume host_dir:container_dir:Z</code></pre>
+<p>For example, to use the <strong>/home/user/dbfiles</strong> host directory for MariaDB database files as <strong>/var/lib/mysql</strong> inside the container, use the following command. The following podman run command is very long and should be entered as a single line.</p>
+<pre><code>podman run -d --name mydb -v /home/user/dbfiles:/var/lib/mysql:Z -e MYSQL_USER=user -e MYSQL_PASSWORD=redhat -e MYSQL_DATABASE=inventory registry.redhat.io/rhel8/mariadb-103:1-102</code></pre>
+<p>The dir must have the SELinux context <strong>container_file_t</strong> mke sure to use <code>:Z</code></p>
+</section>
+<section id="managing-containers-as-service" class="level3">
+<h3 class="anchored" data-anchor-id="managing-containers-as-service">Managing Containers as Service</h3>
+<p>First step is open a new session with user</p>
+<pre><code>ssh user@localhost</code></pre>
+<ul>
+<li>Enable linger</li>
+</ul>
+<pre><code>loginctl enable-linger &lt;user&gt;
+
+# to check
+
+loginctl show-user user</code></pre>
+<ul>
+<li>Create a dir to store the unit files</li>
+</ul>
+<pre><code>mkdir -pv ~/.config/systemd/user/</code></pre>
+<ul>
+<li>Generate the service</li>
+</ul>
+<pre><code>podman generate systemd --name &lt;name of service&gt; --files --new</code></pre>
+<ul>
+<li>use <code>--user</code> to control new user services</li>
+</ul>
+<pre><code>
+[user@host ~]$ systemctl --user daemon-reload
+[user@host ~]$ systemctl --user enable &lt;name of service&gt;
+[user@host ~]$ systemctl --user start &lt;name of service&gt;
+</code></pre>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

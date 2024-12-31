@@ -1,0 +1,1293 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>linux - 6&nbsp; Red Hat OpenShift I: Containers &amp; Kubernetes - DO180</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./OpenShift2.html" rel="next">
+<link href="./Sysadmin3.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./OpenShift1.html"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Red Hat OpenShift I: Containers &amp; Kubernetes - DO180</span></a></li></ol></nav>
+      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+      </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">linux</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./summary.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Summary</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Sysadmin1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Server Administrator I - RH124</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Sysadmin2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Server Administrator II - RH134</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./Sysadmin3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Server Administrator III - RH294</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./OpenShift1.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Red Hat OpenShift I: Containers &amp; Kubernetes - DO180</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./OpenShift2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Red Hat OpenShift Administration II: Operating a Production Kubernetes Cluster - DO280</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#intro-to-container" id="toc-intro-to-container" class="nav-link active" data-scroll-target="#intro-to-container"><span class="header-section-number">6.1</span> Intro to Container</a>
+  <ul class="collapse">
+  <li><a href="#linux-conetainer-architecture" id="toc-linux-conetainer-architecture" class="nav-link" data-scroll-target="#linux-conetainer-architecture"><span class="header-section-number">6.1.1</span> Linux Conetainer Architecture</a></li>
+  <li><a href="#overview-of-kubernetes-and-openshift" id="toc-overview-of-kubernetes-and-openshift" class="nav-link" data-scroll-target="#overview-of-kubernetes-and-openshift"><span class="header-section-number">6.1.2</span> Overview of kubernetes and OpenShift</a></li>
+  </ul></li>
+  <li><a href="#creating-containerized-services" id="toc-creating-containerized-services" class="nav-link" data-scroll-target="#creating-containerized-services"><span class="header-section-number">6.2</span> Creating Containerized Services</a></li>
+  <li><a href="#managing-containers" id="toc-managing-containers" class="nav-link" data-scroll-target="#managing-containers"><span class="header-section-number">6.3</span> Managing Containers</a>
+  <ul class="collapse">
+  <li><a href="#container-life-cybe-management-with-podman" id="toc-container-life-cybe-management-with-podman" class="nav-link" data-scroll-target="#container-life-cybe-management-with-podman"><span class="header-section-number">6.3.1</span> Container Life Cybe management with podman</a></li>
+  <li><a href="#creating-containers" id="toc-creating-containers" class="nav-link" data-scroll-target="#creating-containers"><span class="header-section-number">6.3.2</span> Creating containers</a></li>
+  <li><a href="#run-commands-in-a-container" id="toc-run-commands-in-a-container" class="nav-link" data-scroll-target="#run-commands-in-a-container"><span class="header-section-number">6.3.3</span> Run commands in a container</a></li>
+  <li><a href="#managing-containers-1" id="toc-managing-containers-1" class="nav-link" data-scroll-target="#managing-containers-1"><span class="header-section-number">6.3.4</span> Managing containers</a></li>
+  <li><a href="#attaching-persistent-storage-to-containers" id="toc-attaching-persistent-storage-to-containers" class="nav-link" data-scroll-target="#attaching-persistent-storage-to-containers"><span class="header-section-number">6.3.5</span> Attaching persistent storage to containers</a></li>
+  <li><a href="#accessing-containers" id="toc-accessing-containers" class="nav-link" data-scroll-target="#accessing-containers"><span class="header-section-number">6.3.6</span> Accessing containers</a></li>
+  </ul></li>
+  <li><a href="#managing-container-images" id="toc-managing-container-images" class="nav-link" data-scroll-target="#managing-container-images"><span class="header-section-number">6.4</span> Managing Container Images</a>
+  <ul class="collapse">
+  <li><a href="#accessing-registries" id="toc-accessing-registries" class="nav-link" data-scroll-target="#accessing-registries"><span class="header-section-number">6.4.1</span> Accessing Registries</a></li>
+  <li><a href="#manipulating-container-images" id="toc-manipulating-container-images" class="nav-link" data-scroll-target="#manipulating-container-images"><span class="header-section-number">6.4.2</span> Manipulating Container Images</a></li>
+  </ul></li>
+  <li><a href="#creating-custom-container-images" id="toc-creating-custom-container-images" class="nav-link" data-scroll-target="#creating-custom-container-images"><span class="header-section-number">6.5</span> Creating Custom Container Images</a>
+  <ul class="collapse">
+  <li><a href="#designing-custom-container-images" id="toc-designing-custom-container-images" class="nav-link" data-scroll-target="#designing-custom-container-images"><span class="header-section-number">6.5.1</span> Designing Custom Container Images</a></li>
+  </ul></li>
+  <li><a href="#deploying-containerized-applications-on-openshift" id="toc-deploying-containerized-applications-on-openshift" class="nav-link" data-scroll-target="#deploying-containerized-applications-on-openshift"><span class="header-section-number">6.6</span> Deploying Containerized Applications on OpenShift</a>
+  <ul class="collapse">
+  <li><a href="#describing-kubernetes-and-openshift-architecture" id="toc-describing-kubernetes-and-openshift-architecture" class="nav-link" data-scroll-target="#describing-kubernetes-and-openshift-architecture"><span class="header-section-number">6.6.1</span> Describing Kubernetes and OpenShift Architecture</a></li>
+  <li><a href="#creating-kubernetes-resources" id="toc-creating-kubernetes-resources" class="nav-link" data-scroll-target="#creating-kubernetes-resources"><span class="header-section-number">6.6.2</span> Creating Kubernetes Resources</a></li>
+  <li><a href="#creating-routes" id="toc-creating-routes" class="nav-link" data-scroll-target="#creating-routes"><span class="header-section-number">6.6.3</span> Creating Routes</a></li>
+  <li><a href="#creating-applications-with-source-to-image" id="toc-creating-applications-with-source-to-image" class="nav-link" data-scroll-target="#creating-applications-with-source-to-image"><span class="header-section-number">6.6.4</span> Creating Applications with Source-to-Image</a></li>
+  </ul></li>
+  <li><a href="#deploying-multi-container-applications" id="toc-deploying-multi-container-applications" class="nav-link" data-scroll-target="#deploying-multi-container-applications"><span class="header-section-number">6.7</span> Deploying Multi-Container Applications</a>
+  <ul class="collapse">
+  <li><a href="#considerations-for-multi-container-applications" id="toc-considerations-for-multi-container-applications" class="nav-link" data-scroll-target="#considerations-for-multi-container-applications"><span class="header-section-number">6.7.1</span> Considerations for Multi-Container Applications</a></li>
+  <li><a href="#deploying-a-multi-container-app-on-openshift" id="toc-deploying-a-multi-container-app-on-openshift" class="nav-link" data-scroll-target="#deploying-a-multi-container-app-on-openshift"><span class="header-section-number">6.7.2</span> Deploying A Multi-Container App on OpenShift</a></li>
+  <li><a href="#deploying-a-multi-container-application-on-openshift-using-a-template" id="toc-deploying-a-multi-container-application-on-openshift-using-a-template" class="nav-link" data-scroll-target="#deploying-a-multi-container-application-on-openshift-using-a-template"><span class="header-section-number">6.7.3</span> Deploying a Multi-container Application on OpenShift Using a Template</a></li>
+  </ul></li>
+  <li><a href="#troubleshooting-containerized-applications" id="toc-troubleshooting-containerized-applications" class="nav-link" data-scroll-target="#troubleshooting-containerized-applications"><span class="header-section-number">6.8</span> Troubleshooting Containerized Applications</a>
+  <ul class="collapse">
+  <li><a href="#troubleshooting-s2i-builds-and-deployments" id="toc-troubleshooting-s2i-builds-and-deployments" class="nav-link" data-scroll-target="#troubleshooting-s2i-builds-and-deployments"><span class="header-section-number">6.8.1</span> Troubleshooting S2I Builds and Deployments</a></li>
+  <li><a href="#troubleshooting-containerized-applications-1" id="toc-troubleshooting-containerized-applications-1" class="nav-link" data-scroll-target="#troubleshooting-containerized-applications-1"><span class="header-section-number">6.8.2</span> Troubleshooting Containerized Applications</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Red Hat OpenShift I: Containers &amp; Kubernetes - DO180</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="intro-to-container" class="level2" data-number="6.1">
+<h2 data-number="6.1" class="anchored" data-anchor-id="intro-to-container"><span class="header-section-number">6.1</span> Intro to Container</h2>
+<p>Containers ares a set of one or more processes that are isolated from the rest of the system.</p>
+<p>Containers provide many of the same benefits as virtual machines, such as security, storage, and network isolation. Containers require far fewer hardware resources and are quick to start and terminate. They also isolate the libraries and the runtime resources (such as CPU and storage) for an application to minimize the impact of any OS update to the host OS.</p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="img/container_vs_OS.png" class="img-fluid" style="width:90.0%"></p>
+</div>
+</div>
+<p>Advantages of using container:</p>
+<ul>
+<li><strong>Low hardware footprint</strong> : Use OS internal features to create and isolate environment, minimizing the use of cpu and memory</li>
+<li><strong>Environment isolation</strong> : changes made to the host OS do not affect the container</li>
+<li><strong>Quick deployment</strong> : no need to install the entire OS</li>
+<li><strong>Multiple environment deployment</strong> : all appls dependencies and environment settings are encapsulated in the container image</li>
+<li><strong>Reusability</strong> : container can be reused without need to set up a full OS</li>
+</ul>
+<section id="linux-conetainer-architecture" class="level3" data-number="6.1.1">
+<h3 data-number="6.1.1" class="anchored" data-anchor-id="linux-conetainer-architecture"><span class="header-section-number">6.1.1</span> Linux Conetainer Architecture</h3>
+<p>An <strong>image</strong> is a template for containers that include a runtime environment and all the libs are configuration files, container images need to be locally available for the container runtime, below <strong>image repositories</strong> available :</p>
+<ul>
+<li>Red Hat Container Catalog : https://registry.redhat.io</li>
+<li>Docker Hub : https://hub.docker.com</li>
+<li>Red Hat Quay : https://quay.io</li>
+<li>Google Container Registry : https://cloud.google.com/container-registry/</li>
+<li>Amazon Elastic Container Registry : https://aws.amazon.com/ecr/</li>
+</ul>
+<p>To manage the container we can use <strong>podman</strong> an open source tool for managing containers and container image</p>
+<p>if need to install <em>podman</em> :</p>
+<pre><code>yum install podman</code></pre>
+</section>
+<section id="overview-of-kubernetes-and-openshift" class="level3" data-number="6.1.2">
+<h3 data-number="6.1.2" class="anchored" data-anchor-id="overview-of-kubernetes-and-openshift"><span class="header-section-number">6.1.2</span> Overview of kubernetes and OpenShift</h3>
+<p><strong>Think</strong> : <em>as the number of containers managed by an organization grows, the work of manually starting them rises exponentially along with the need to quickly respond to external demands</em></p>
+<p><em><strong>Enterprise needs:</strong></em></p>
+<ul>
+<li>Easy communication between a large number of services</li>
+<li>Resources limits on applications regardless of the number fo containers running them</li>
+<li>To respond to application usage spikes to increase or decrease running containers</li>
+<li>Reacs to service deterioration with health checks</li>
+<li>Gradual roll out fo a new release to a set of users</li>
+</ul>
+<p><strong>Kubernetes</strong> is an orchestration service that simplifies the deployment, management, and scaling of containerized applications, the smallest unit if kunernetes is a <strong>pod</strong> that consist of one or more containers.</p>
+<p>Kubernetes features of top of a container infra:</p>
+<ul>
+<li><strong>Service discovery and loading balancing</strong> : communication by a single DNS entry to each set of container, permits the load balancing across the pool of container.</li>
+<li><strong>Horizontal scaling</strong> : Appl can scale up and down manually or automatically</li>
+<li><strong>Self-Healing</strong>: user-defined health checks to monitor containers to restart in case of failure</li>
+<li><strong>Automated rollout and rollback</strong> : roll updates out to appl containers, if something goes wrong kubernetes can rollback to previous integration of the deployment</li>
+<li><strong>Secrets and configuration management</strong> : can manage the config settings fo application without rebuilding container</li>
+<li><strong>Operators</strong> : use API to update the cluster state reacting to change in the app state</li>
+</ul>
+<p><strong>Red Hat OpenShift Container Plataform (<em>RHOCP</em>)</strong> is a set of modular components and services build on top of Kubernetes, adds the capabilities to provide PaaS platform.</p>
+<p>OpenShift features to kubernetes cluster :</p>
+<ul>
+<li><strong>Itegrated developer workflow</strong> : integrates a build in container registry, CI/CD pipeline and S2I, a tool to build artifacts from source repositories to container image</li>
+<li><strong>Routes</strong> : expose service to the outside world</li>
+<li><strong>Metrics and logging</strong> : Metric service and aggregated logging</li>
+<li><strong>Unified UI</strong> : UI to manage the different capabilities</li>
+</ul>
+</section>
+</section>
+<section id="creating-containerized-services" class="level2" data-number="6.2">
+<h2 data-number="6.2" class="anchored" data-anchor-id="creating-containerized-services"><span class="header-section-number">6.2</span> Creating Containerized Services</h2>
+<p>The podman is designed to be a rootless container running as a non-root user, however we can run the container as root if necessary using sudo, but it is a risk and not recommenced.</p>
+<p>The container image are named based on the syntax <strong>registry_name/user_name/image_name:tag</strong></p>
+<ul>
+<li><strong>registry_name</strong> : FQDN or the registry</li>
+<li><strong>user_name</strong> : name of user or organization to which images belongs</li>
+<li><strong>tag</strong> : identifies image version</li>
+</ul>
+<p>Basic Commands:</p>
+<ul>
+<li>To search an image</li>
+</ul>
+<pre><code>podman search &lt;image&gt;</code></pre>
+<ul>
+<li>To download/<strong>pull</strong> an image</li>
+</ul>
+<pre><code>podman pull &lt;image&gt;</code></pre>
+<ul>
+<li>To retrieve the images</li>
+</ul>
+<pre><code>podman images</code></pre>
+<ul>
+<li>To run a <strong>Hello World</strong> container</li>
+</ul>
+<pre><code>[user@demo ~]$ podman run ubi8/ubi:8.3 echo 'Hello world!'
+Hello world!</code></pre>
+<ul>
+<li>To start a container image as a background we can use <code>-d</code> option and to expose a port <code>-p &lt;container port&gt;</code></li>
+</ul>
+<pre><code>[user@demo ~]$ podman run -d -p 8080 registry.redhat.io/rhel8/httpd-24
+
+# retrieve the local port on which the container listens
+[user@demo ~]$ podman port -l
+
+
+
+# test
+[user@demo ~]$ curl http://0.0.0.0:44389
+
+</code></pre>
+<ul>
+<li>To start a bash terminal inside the container</li>
+</ul>
+<pre><code>[user@demo ~]$ podman run -it ubi8/ubi:8.3 /bin/bash</code></pre>
+<ul>
+<li>Using variables with <code>-e</code> option</li>
+</ul>
+<pre><code>[user@demo ~]$ podman run --name mysql-custom \
+&gt; -e MYSQL_USER=redhat -e MYSQL_PASSWORD=r3dh4t \
+&gt; -e MYSQL_ROOT_PASSWORD=r3dh4t \
+&gt; -d registry.redhat.io/rhel8/mysql-80
+
+
+
+# test
+
+sudo podman exec -ti msql-custom /bin/bash
+msql -uroot
+show databases
+
+</code></pre>
+<ul>
+<li><p>Give a container a name <code>--name</code>, it is important because you can manage your container by name</p></li>
+<li><p>Other common option is <code>-t</code> for pseudo terminal an <code>-i</code> keeps <em>stdin</em> open even if not attached</p></li>
+</ul>
+</section>
+<section id="managing-containers" class="level2" data-number="6.3">
+<h2 data-number="6.3" class="anchored" data-anchor-id="managing-containers"><span class="header-section-number">6.3</span> Managing Containers</h2>
+<section id="container-life-cybe-management-with-podman" class="level3" data-number="6.3.1">
+<h3 data-number="6.3.1" class="anchored" data-anchor-id="container-life-cybe-management-with-podman"><span class="header-section-number">6.3.1</span> Container Life Cybe management with podman</h3>
+<p>Podman provides a set of subcomands to create and manage containers ?</p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="img/podman_managing_subcommands.png" class="img-fluid" style="width:90.0%"></p>
+</div>
+</div>
+<p>Also subcommands to extract information from containers ?</p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="img/podman_query_subcommands.png" class="img-fluid" style="width:90.0%"></p>
+</div>
+</div>
+</section>
+<section id="creating-containers" class="level3" data-number="6.3.2">
+<h3 data-number="6.3.2" class="anchored" data-anchor-id="creating-containers"><span class="header-section-number">6.3.2</span> Creating containers</h3>
+<p>Using podman run command to create containers</p>
+<pre><code># sample 1
+[user@host ~]$ podman run registry.redhat.io/rhel8/httpd-24
+
+# sample 2
+[user@host ~]$ podman run --name my-httpd-container -d registry.redhat.io/rhel8/httpd-24
+
+
+# sammple 3
+[user@host ~]$ podman run -it registry.redhat.io/rhel8/httpd-24 /bin/bash
+</code></pre>
+</section>
+<section id="run-commands-in-a-container" class="level3" data-number="6.3.3">
+<h3 data-number="6.3.3" class="anchored" data-anchor-id="run-commands-in-a-container"><span class="header-section-number">6.3.3</span> Run commands in a container</h3>
+<p>We can use <code>exec</code> option to submit the command</p>
+<pre><code>sample 2
+[user@host ~]$ podman exec 7ed6e671a600 cat /etc/hostname
+
+# sample 2  this l means latest, last container used
+[user@host ~]$ podman exec -l cat /etc/hostname</code></pre>
+</section>
+<section id="managing-containers-1" class="level3" data-number="6.3.4">
+<h3 data-number="6.3.4" class="anchored" data-anchor-id="managing-containers-1"><span class="header-section-number">6.3.4</span> Managing containers</h3>
+<ul>
+<li>List containers running :</li>
+</ul>
+<pre><code>podman ps</code></pre>
+<ul>
+<li>List all containers</li>
+</ul>
+<pre><code>podman ps -a</code></pre>
+<ul>
+<li>Stop, start or restart a container</li>
+</ul>
+<pre><code>[user@host ~]$ podman stop|start|restart &lt;container_name&gt;</code></pre>
+<ul>
+<li>Kill or remove a container</li>
+</ul>
+<pre><code>[user@host ~]$ podman rm|kill &lt;container_name&gt;
+</code></pre>
+<ul>
+<li>Remove or stop all containers</li>
+</ul>
+<pre><code>podman rm|stop -a</code></pre>
+<ul>
+<li>Format the output</li>
+</ul>
+<pre><code>[student@workstation ~]$ podman ps --format="{{.ID}} {{.Names}} {{.Status}}"
+a49dba9ff17f  mysql Up About a minute ago</code></pre>
+</section>
+<section id="attaching-persistent-storage-to-containers" class="level3" data-number="6.3.5">
+<h3 data-number="6.3.5" class="anchored" data-anchor-id="attaching-persistent-storage-to-containers"><span class="header-section-number">6.3.5</span> Attaching persistent storage to containers</h3>
+<ol type="1">
+<li>Create dir</li>
+</ol>
+<pre><code>mkdir &lt;dir&gt;</code></pre>
+<ol start="2" type="1">
+<li>The user running the process in the container must be capable of writing files to the dir, for example in MYSQL the UID 27</li>
+</ol>
+<pre><code>podman unshare chown -R 27:27 &lt;dir&gt;</code></pre>
+<ol start="3" type="1">
+<li>Apply the <strong>container_file_t</strong> context to allow container access</li>
+</ol>
+<pre><code>sudo semanage fcontext -a -t container_file_t '/home/student/dbfiles(/.*)?' </code></pre>
+<ol start="4" type="1">
+<li>Apply the SELinux container policy</li>
+</ol>
+<pre><code>sudo restorecon -Rv /home/student/dbfiles</code></pre>
+<ol start="5" type="1">
+<li>Mount volume</li>
+</ol>
+<pre><code>[user@host ~]$ podman run -v /home/student/dbfiles:/var/lib/mysql rhmap47/mysql</code></pre>
+</section>
+<section id="accessing-containers" class="level3" data-number="6.3.6">
+<h3 data-number="6.3.6" class="anchored" data-anchor-id="accessing-containers"><span class="header-section-number">6.3.6</span> Accessing containers</h3>
+<p>To manage the port we use the option <code>-p [&lt;IP address&gt;:][&lt;host port&gt;:]&lt;container port&gt;</code></p>
+<pre><code>podman run -d --name apache1 -p 8080:80 registry.redhat.io/rhel8/httpd-24</code></pre>
+<ul>
+<li>To see the port assigned</li>
+</ul>
+<pre><code>podman port &lt;container name&gt;</code></pre>
+</section>
+</section>
+<section id="managing-container-images" class="level2" data-number="6.4">
+<h2 data-number="6.4" class="anchored" data-anchor-id="managing-container-images"><span class="header-section-number">6.4</span> Managing Container Images</h2>
+<section id="accessing-registries" class="level3" data-number="6.4.1">
+<h3 data-number="6.4.1" class="anchored" data-anchor-id="accessing-registries"><span class="header-section-number">6.4.1</span> Accessing Registries</h3>
+<p>Image registries are services offering container images to download. They allow image creators and maintainers to store and distribute container images to public or private audiences.</p>
+<p>To configure registreis for podman command we need to update <strong>/etc/containers/registries.conf</strong></p>
+<ul>
+<li>To search :</li>
+</ul>
+<pre><code>[user@host ~]$ podman search [OPTIONS] &lt;term&gt;</code></pre>
+<ul>
+<li>To authenticate</li>
+</ul>
+<pre><code>podman login &lt;registry&gt;</code></pre>
+<ul>
+<li>Pull images</li>
+</ul>
+<pre><code>[user@host ~]$ podman pull [OPTIONS] [REGISTRY[:PORT]/]NAME[:TAG]
+
+[user@host ~]$ podman pull quay.io/bitnami/nginx</code></pre>
+<ul>
+<li>List local copies</li>
+</ul>
+<pre><code>podman images</code></pre>
+<ul>
+<li>Images Tags</li>
+</ul>
+<p><em>An image tag is a mechanism to support multiple releases of the same image</em></p>
+<pre><code>[user@host ~]$ podman pull registry.redhat.io/rhel8/mysql-80:1
+
+[user@host ~]$ podman run registry.redhat.io/rhel8/mysql-80:1</code></pre>
+</section>
+<section id="manipulating-container-images" class="level3" data-number="6.4.2">
+<h3 data-number="6.4.2" class="anchored" data-anchor-id="manipulating-container-images"><span class="header-section-number">6.4.2</span> Manipulating Container Images</h3>
+<ul>
+<li>Save and load an image</li>
+</ul>
+<p>Images can be saved as .tar file :</p>
+<pre><code># Save
+podman save [-o FILE_NAME] IMAGE_NAME[:TAG]
+podman save -o mysql.tar registry.redhat.io/rhel8/mysql-80
+
+
+#Load
+podman load [-i FILE_NAME]
+podman load -i mysql.tar
+</code></pre>
+<ul>
+<li>Delete an image from local storage</li>
+</ul>
+<pre><code>podman rmi [OPTIONS] IMAGE [IMAGE...]
+
+# To delete all
+podman rmi -a</code></pre>
+<ul>
+<li>To modify an image</li>
+</ul>
+<pre><code>[user@host ~]$ podman commit [OPTIONS] CONTAINER [REPOSITORY[:PORT]/]IMAGE_NAME[:TAG]</code></pre>
+<p>To see the difference that we have made on container we can use <code>podman diff &lt;image&gt;</code></p>
+<ul>
+<li>To commit changes</li>
+</ul>
+<pre><code>[user@host ~]$ podman commit mysql-basic  mysql-custom</code></pre>
+<ul>
+<li>Tagging Images</li>
+</ul>
+<pre><code>podman tag [OPTIONS] IMAGE[:TAG]  [REGISTRYHOST/][USERNAME/]NAME[:TAG]
+
+# sample 1
+podman tag mysql-custom devops/mysql
+
+# sample 2
+podman tag mysql-custom devops/mysql:snapshot</code></pre>
+<ul>
+<li>Push images to registry</li>
+</ul>
+<pre><code>[user@host ~]$ podman push [OPTIONS] IMAGE [DESTINATION]
+
+# sample
+[user@host ~]$ podman push quay.io/bitnami/nginx</code></pre>
+<ul>
+<li>To remove tags from image</li>
+</ul>
+<pre><code>podman rmi devops/mysql:snapahot</code></pre>
+</section>
+</section>
+<section id="creating-custom-container-images" class="level2" data-number="6.5">
+<h2 data-number="6.5" class="anchored" data-anchor-id="creating-custom-container-images"><span class="header-section-number">6.5</span> Creating Custom Container Images</h2>
+<section id="designing-custom-container-images" class="level3" data-number="6.5.1">
+<h3 data-number="6.5.1" class="anchored" data-anchor-id="designing-custom-container-images"><span class="header-section-number">6.5.1</span> Designing Custom Container Images</h3>
+<p>One method to create a container image is modify the existing one to meet the requirements of the application. <strong>Containerfiles</strong> are another option that make this task easy to create, share and control the image.</p>
+<ul>
+<li><p><strong>Red Hat Software Collections Library (RHSCL)</strong> : solution for developers who require the latest development tools that usually do not fit the standard RHEL release schedule.</p></li>
+<li><p><strong>Red Hat Enterprise Linux (RHEL)</strong> : stable environment for enterprise applications.</p></li>
+</ul>
+<p>We can finding <strong>Containerfiles</strong> from Red HAt Collections Library, RHSCL is the source of most container images provided by the Red Hat image registry for use by RHEL Atomic Host and OpenShift Container Platform customers.</p>
+<p>Also <strong>Red Hat Container Catalog RHCC</strong> is a repository of reliable, tested, certified, and curated collection of container images built on versions of Red Hat Enterprise Linux (RHEL) and related systems</p>
+<p><strong>Quay.io</strong> is an advanced container repository from CoreOS, we can search for container images using httpds://quay.io/search</p>
+<p><strong>Docker Hub</strong> is a repository that anyone can crete and share an image, need to be carreful with images from Docker Hub</p>
+<p><strong>Source-to-Image (S2I)</strong> the OpenShift source-to-image tool is an alternative to using Containerfiles to create new containers that can be use from OpenShift or as standalone s2i utility, The S2I use the follow process to build a custom container image:</p>
+<ol type="1">
+<li>Start a container from a base container image called the builder image.</li>
+<li>Fetch the application source code, usually from a Git server, and send it to the container.</li>
+<li>Build the application binary files inside the container.</li>
+<li>Save the container, after some clean up ### Building Custom Container images with Containerfiles</li>
+</ol>
+<p>A <strong>Containerfile</strong> is a mechanism to automate the building of container images, to build we have three steps:</p>
+<ol type="1">
+<li>Create a working directory</li>
+<li>Write the Containerfile</li>
+<li>Build the image with Podman</li>
+</ol>
+<pre><code># This is a comment line
+FROM ubi8/ubi:8.3
+LABEL description="This is a custom httpd container image"
+MAINTAINER John Doe &lt;jdoe@xyz.com&gt;
+RUN yum install -y httpd
+EXPOSE 80
+ENV LogLevel "info"
+ADD http://someserver.com/filename.pdf /var/www/html
+COPY ./src/ /var/www/html/
+USER apache
+ENTRYPOINT ["/usr/sbin/httpd"]
+CMD ["-D", "FOREGROUND"]</code></pre>
+<ul>
+<li><code>FROM</code> : declares that the new container image extends ubi8/ubi:8.3 container base image</li>
+<li><code>LABEL</code>: is responsible for adding generic metadata to an image</li>
+<li><code>MAINTAINER</code> : Indicates the author</li>
+<li><code>RUN</code> : executes commands in a new layer on top of the current image</li>
+<li><code>EXPOSE</code> : indicates that the container listens on the specified network port at runtime</li>
+<li><code>ENV</code> : is responsible for defining environment variables that are available in the container</li>
+<li><code>ADD</code> : copies files or folders from a local or remote source and adds them to the container’s file system, ADD also unpack local .tar files</li>
+<li><code>COPY</code> : copies files from the working directory and adds them to the container’s file system</li>
+<li><code>USER</code> : specifies the username or the UID to use when running the container image for the RUN, CMD, and ENTRYPOINT instructions</li>
+<li><code>ENTRYOINT</code> : specifies the default command to execute when the image runs in a container.</li>
+<li><code>CMD</code> : provides the default arguments for the ENTRYPOINT instruction</li>
+</ul>
+<p><strong>Building Image with Podman</strong></p>
+<p>Podman build command process the Containerfile and build a new image</p>
+<pre><code>podman build -t NAME:TAG DIR</code></pre>
+<p><strong>Image layering</strong></p>
+<ul>
+<li>Each instruction in a Containerfile create a new layer</li>
+</ul>
+<p><strong>Sample</strong></p>
+<p><em>Creating a container file</em></p>
+<pre><code>FROM rhel7:7.5
+
+MAINTAINER Bruno Machado &lt;bmachado@kyndryl.com&gt;
+
+LABEL description =  "A custom Apache image"
+
+ADD training.repo /etc/yum.repos.d/training.repo
+
+RUN yum install -y htppd &amp;&amp; \
+    yum clean all
+    
+RUN echo "Hello  from  Containerfile " &gt; /usr/share/httpd/noindex/index.html
+
+EXPOSE 80
+
+ENTRYPOINT ["httpd","-D","FOREGROUND"]</code></pre>
+<p><em>Build</em></p>
+<pre><code># Build
+sudo podman build -t d080/apache .
+
+# Check images:
+sudo pdman images
+
+# Run the container
+sudo podman run --name lab-apache -d -p 10080:80 do080/apache
+
+
+# Test with curl
+curl 127.0.0.1:10080</code></pre>
+</section>
+</section>
+<section id="deploying-containerized-applications-on-openshift" class="level2" data-number="6.6">
+<h2 data-number="6.6" class="anchored" data-anchor-id="deploying-containerized-applications-on-openshift"><span class="header-section-number">6.6</span> Deploying Containerized Applications on OpenShift</h2>
+<section id="describing-kubernetes-and-openshift-architecture" class="level3" data-number="6.6.1">
+<h3 data-number="6.6.1" class="anchored" data-anchor-id="describing-kubernetes-and-openshift-architecture"><span class="header-section-number">6.6.1</span> Describing Kubernetes and OpenShift Architecture</h3>
+<p><strong>Kubernetes and OpenShift</strong></p>
+<blockquote class="blockquote">
+<p>Kubernetes is an orchestration service that simplifies the deployment, management, and scaling of containerized applications.</p>
+</blockquote>
+<ul>
+<li><p><em><strong>Kubernetes Terminology</strong></em> :</p>
+<ul>
+<li><strong>Node</strong> : A server that hosts applications in a Kubernetes cluster.</li>
+<li><strong>Control Plane</strong> : Provides basic cluster services such as APIs or controllers.</li>
+<li><strong>Compute Node</strong> : This node executes workloads for the cluster. Application pods are scheduled onto compute nodes.</li>
+<li><strong>Resource</strong> : kind of component definition managed by Kubernetes. Resources contain the configuration of the managed component and the current state of the component</li>
+<li><strong>Controller</strong> : A controller is a Kubernetes process that watches resources and makes changes attempting to move the current state towards the desired state.</li>
+<li><strong>Label</strong> : A key-value pair that can be assigned to any Kubernetes resource. Selectors use labels to filter eligible resources for scheduling and other operations.</li>
+<li><strong>Namespace</strong> : A scope for Kubernetes resources and processes, so that resources with the same name can be used in different boundaries.</li>
+</ul></li>
+</ul>
+<blockquote class="blockquote">
+<p>Red Hat OpenShift Container Platform is a set of modular components and services built on top of Red Hat CoreOS and Kubernetes. RHOCP adds PaaS capabilities such as remote management, increased security, monitoring and auditing, application lifecycle management, and self-service interfaces for developers.</p>
+</blockquote>
+<ul>
+<li><p><em><strong>OpenShift Terminology</strong></em></p>
+<ul>
+<li><strong>Infra Node</strong> : A node server containing infrastructure services like monitoring, logging, or external routing</li>
+<li><strong>Console</strong> : A web UI provided by the RHOCP cluster that allows developers and administrators to interact with cluster resources</li>
+<li><strong>Project</strong> : OpenShift extension of Kubernetes’ namespaces. Allows the definition of user access control (UAC) to resources.</li>
+</ul></li>
+</ul>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="img/openShift_component_stack.png" class="img-fluid" style="width:90.0%"></p>
+</div>
+</div>
+<ul>
+<li><p><strong>CoreOS</strong> is a Linux distribution focused on providing an immutable operating system for container execution</p></li>
+<li><p><strong>CRI-O</strong> is an implementation of the Kubernetes Container Runtime Interface <em>CRI</em></p></li>
+<li><p><strong>Kubernetes</strong> manages a cluster of hosts, physical or virtual that run containers.</p></li>
+<li><p><strong>Etcd</strong> : Key-value store to store config and state information about container and other resources</p></li>
+<li><p><strong>CRD</strong> C_ustom Resource Definition_ are resource types stored in Etcd and managed by Kubernetes</p></li>
+<li><p><strong>Containerized services</strong> fulfill many PaaS infrastructure functions, such as networking and authorization.</p></li>
+<li><p><strong>Runtimes and xPaaS</strong> based container images ready for use for dev</p></li>
+<li><p>RHOCP provides <strong>web UI and CLI tools</strong> for managing user application</p></li>
+<li><p><em><strong>OpenShift and Kubernetes architecture illustration</strong></em></p></li>
+</ul>
+<p>On the below fig we can see the control plane that control de cluster, runs on CoreOS, and Node e Infra Pods to do the own work on OpenShift.</p>
+<p>We can have storage on Ceph, Gluster or from vendor. These runs on Bare metal or on cloud</p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="img/openshift_and_Kube_archi.png" class="img-fluid" style="width:90.0%"></p>
+</div>
+</div>
+<p><br></p>
+<p><strong>Describing Kubernetes Resource Types</strong></p>
+<ul>
+<li><strong>Pods (<em>po</em>)</strong> : collection of containers that share resources</li>
+<li><strong>Services (<em>svc</em>)</strong> : How pods talk with each other. Single IP/port combination that provides access to a pool of pods</li>
+<li><strong>Replication Controllers (<em>rc</em>)</strong> : how pods are replicated into different notes</li>
+<li><strong>Persistent Volumes (<em>pv</em>)</strong> : Define storage areas to be used by Kubernetes pods.</li>
+<li><strong>Persistent Volume Claims (<em>pvc</em>)</strong> : Represent a request for storage by a pod.</li>
+<li><strong>ConfigMaps (<em>cm</em>) and Secrets</strong> : Contains a set of keys and values that can be used by other resources</li>
+</ul>
+<p><strong>OpenShift Resource Types</strong></p>
+<ul>
+<li><strong>Deployment and Deployment Config (<em>dc</em>)</strong> : Both are the representation of a set of containers, it contains the configuration to be applied to all containers of each pod replica (images, tags, storage definitions, etc)</li>
+<li><strong>Build config (<em>bc</em>)</strong> : Process to be executed in the OpenShift project. A <strong>bc</strong> works together with a <strong>dc</strong> to provide a basic CI/CD workflows.</li>
+<li><strong>Routes</strong> : Represent a DNS host name recognized by the OpenShift router as an ingress point for applications and microservices.</li>
+</ul>
+</section>
+<section id="creating-kubernetes-resources" class="level3" data-number="6.6.2">
+<h3 data-number="6.6.2" class="anchored" data-anchor-id="creating-kubernetes-resources"><span class="header-section-number">6.6.2</span> Creating Kubernetes Resources</h3>
+<p>The main method to interacting with an RHOCP is using <code>oc</code> command line</p>
+<pre><code>oc &lt;command&gt;
+
+oc login &lt;clusterURL&gt;
+</code></pre>
+<p>The pod resource definition syntax can be provided by JSON or YAML</p>
+<p><em>Sample of YAML format</em></p>
+<pre><code>apiVersion: v1
+kind: Pod
+metadata:
+  name: wildfly
+  labels:
+    name: wildfly
+spec:
+  containers:
+    - resources:
+        limits:
+            cpu: 0.5
+      image: do276/todojee
+      name: wildfly
+      ports:
+          - containerPort: 8080
+            name: wildfly
+      env:
+          - name: MYSQL_ENV_MYSQL_DATABASE
+            value: items
+          - name: MYSQL_ENV_MYSQL_USER
+            value: user1
+          - name: MYSQL_ENV_MYSQL_PASSWORD
+            value: mypa55</code></pre>
+<p><strong>Discovering services</strong></p>
+<p>Using IP and port :</p>
+<ul>
+<li>SVC_NAME_SERVICE_HOST is the service IP address.</li>
+<li>SVC_NAME_SERVICE_PORT is the service TCP port.</li>
+</ul>
+<p>Using DNS:</p>
+<ul>
+<li><p>SVC_NAME .PROJECT_NAME.svc.cluster.local</p></li>
+<li><p>To create a tunel to our machine</p></li>
+</ul>
+<pre><code>[user@host ~]$ oc port-forward mysql-openshift-1-glqrp 3306:3306</code></pre>
+<p><br></p>
+<p><strong>Creating application</strong></p>
+<pre><code># sample 1
+[user@host ~]$ oc new-app mysql MYSQL_USER=user MYSQL_PASSWORD=pass MYSQL_DATABA SE=testdb -l db=mysql
+</code></pre>
+<ul>
+<li>Create using docker image</li>
+</ul>
+<pre><code># sample 2 using docker img
+oc new-app --docker-image=myregistry.com/mycompany/myapp --name=myapp</code></pre>
+<ul>
+<li>Create using Git Repo</li>
+</ul>
+<pre><code># sample 3 from Git
+oc new-app https://github.com/openshift/ruby-hello-world --name=ruby-hello</code></pre>
+<ul>
+<li>Creating from template</li>
+</ul>
+<pre><code># from template
+$ oc new-app \
+--template=mysql-persistent \
+-p MYSQL_USER=user1 -p MYSQL_PASSWORD=mypa55 -p MYSQL_DATABASE=testdb \
+-p MYSQL_ROOT_PASSWORD=r00tpa55 -p VOLUME_CAPACITY=10Gi
+...output omitted..</code></pre>
+<p><strong>Managing Persistent Storage</strong></p>
+<ul>
+<li>List persistent volume objects</li>
+</ul>
+<pre><code>[admin@host ~]$ oc get pv</code></pre>
+<ul>
+<li>See the YAML definition for a PersistentVolume</li>
+</ul>
+<pre><code>[admin@host ~]$ oc get pv pv0001 -o yaml</code></pre>
+<ul>
+<li>Add more PersistentVolume objects</li>
+</ul>
+<pre><code>[admin@host ~]$ oc create -f pv1001.yaml</code></pre>
+<p><br></p>
+<p><strong>Request persistent volume</strong></p>
+<ul>
+<li>Create a pvc object request :</li>
+</ul>
+<p>We create a PersistentVolumeClaim (<em>PVC</em>) object to request :</p>
+<pre><code>apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: myapp
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi</code></pre>
+<ul>
+<li>To create the PVC :</li>
+</ul>
+<pre><code>[admin@host ~]$ oc create -f pvc.yaml</code></pre>
+<ul>
+<li>To list the PVCs</li>
+</ul>
+<pre><code>[admin@host ~]$ oc get pvc</code></pre>
+<p><br></p>
+<p><strong>Managing OpenShift Resources at the command line</strong></p>
+<p>The <code>oc get RESOURCE_TYPE</code> command display the summary of all resources</p>
+<ul>
+<li><code>oc get all</code> : retrieve a summary of the most important components</li>
+<li><code>oc describe RESOURCE_TYPE|RESOURCE_NAME</code> : retrieve additional information</li>
+<li><code>oc get RESOURCE_TYPE|RESOURCE_NAME</code> : export a resource definition.</li>
+<li><code>oc create RESOURCE_TYPE|RESOURCE_NAME</code> : create resources</li>
+<li><code>oc edit</code>: edit resource definitions</li>
+<li><code>oc delete RESOURCE_TYPE</code> : remove resource from openshift</li>
+<li><code>oc exec CONTAINER_ID</code> : executes commands inside a container.</li>
+</ul>
+<p><strong>Tip :</strong></p>
+<p>If we use label we can make reference by label</p>
+<pre><code>$ oc get svc,deployments -l app=nexus</code></pre>
+</section>
+<section id="creating-routes" class="level3" data-number="6.6.3">
+<h3 data-number="6.6.3" class="anchored" data-anchor-id="creating-routes"><span class="header-section-number">6.6.3</span> Creating Routes</h3>
+<p>A route connects a public-facing IP address and DNS host name to an internal-facing service IP. It uses the service resource to find the endpoints; that is, the ports exposed by the service.</p>
+<p>OpenShift routes are implemented by a cluster-wide router service, sample of route defined using JSON:</p>
+<pre><code>{
+  "apiVersion": "v1",
+  "kind": "Route",
+  "metadata": {
+      "name": "quoteapp"
+  },
+  "spec": {
+        "host": "quoteapp.apps.example.com",
+        "to": {
+              "kind": "Service",
+              "name": "quoteapp"
+        }
+    }
+}</code></pre>
+<ul>
+<li>Creating routes</li>
+</ul>
+<pre><code>$ oc expose service quotedb --name quote</code></pre>
+<ul>
+<li>Inspect the routes</li>
+</ul>
+<pre><code>$ oc get pod --all-namespaces | grep router
+&gt; openshift-ingress router-default-746b5cfb65-f6sdm 1/1 Running 1 4d
+
+# describe :
+$ oc describe pod router-default-746b5cfb65-f6sdm</code></pre>
+</section>
+<section id="creating-applications-with-source-to-image" class="level3" data-number="6.6.4">
+<h3 data-number="6.6.4" class="anchored" data-anchor-id="creating-applications-with-source-to-image"><span class="header-section-number">6.6.4</span> Creating Applications with Source-to-Image</h3>
+<ul>
+<li><strong>Source-to-Image (S2I)</strong> : This tool takes an application’s source code from a Git repository, injects the source code into a base container and produces a new container image that runs the assembled application.</li>
+</ul>
+<p>Image stream resource is configuration that names specific container images to get the list of default images streams populated by OpenShift</p>
+<pre><code>$ oc get is -n openshift
+</code></pre>
+<p><br></p>
+<p><strong>Buyild an application with S2I and CLI</strong></p>
+<ul>
+<li>From Git</li>
+</ul>
+<pre><code>$ oc new-app php~http://my.git.server.com/my-app
+
+# or another syntax
+$ oc new-app -i php http://services.lab.example.com/app --name=myapp
+</code></pre>
+<ul>
+<li>From path</li>
+</ul>
+<pre><code>oc new-app .</code></pre>
+<ul>
+<li>Using contect</li>
+</ul>
+<pre><code>$ oc new-app https://github.com/openshift/sti-ruby.git --context-dir=2.0/test/puma-test-app</code></pre>
+<ul>
+<li>Specific branch</li>
+</ul>
+<pre><code>$ oc new-app https://github.com/openshift/ruby-hello-world.git#beta4</code></pre>
+<p><br></p>
+<p>After creating a new application, the build process starts we can check using <code>get builds</code> command</p>
+<pre><code>$ oc get builds</code></pre>
+<ul>
+<li>Check the logs</li>
+</ul>
+<pre><code>$ oc logs build/myapp-1</code></pre>
+<ul>
+<li>Trigger a new build with the <code>oc start-build build_config_name</code> command</li>
+</ul>
+<pre><code>$ oc get buildconfig
+
+$ oc start-build myapp</code></pre>
+</section>
+</section>
+<section id="deploying-multi-container-applications" class="level2" data-number="6.7">
+<h2 data-number="6.7" class="anchored" data-anchor-id="deploying-multi-container-applications"><span class="header-section-number">6.7</span> Deploying Multi-Container Applications</h2>
+<section id="considerations-for-multi-container-applications" class="level3" data-number="6.7.1">
+<h3 data-number="6.7.1" class="anchored" data-anchor-id="considerations-for-multi-container-applications"><span class="header-section-number">6.7.1</span> Considerations for Multi-Container Applications</h3>
+<ul>
+<li>Complex applications have different components such as fron-end, REST back end and database server, it is possible to orchestrate multi-conatiner applications manually, but openshift and kubernets provide tools to facilite that.</li>
+</ul>
+</section>
+<section id="deploying-a-multi-container-app-on-openshift" class="level3" data-number="6.7.2">
+<h3 data-number="6.7.2" class="anchored" data-anchor-id="deploying-a-multi-container-app-on-openshift"><span class="header-section-number">6.7.2</span> Deploying A Multi-Container App on OpenShift</h3>
+<ul>
+<li><p>Pods are attached to a Kubernetes namespace, which OpenShift calls a project</p></li>
+<li><p>When a pod starts, Kubernetes automatically adds a set of environment variables for each service defined on the same namespace.</p></li>
+<li><p>Any service defined on Kubernetes generates environment variables for the IP address and port number where the service is available</p></li>
+<li><p>Kubernetes automatically injects these environment variables into the containers from pods in the same namespace</p></li>
+<li><p><code>&lt;SERVICE_NAME&gt;_SERVICE_HOST</code>: Represents the IP address enabled by a service to accessa pod.</p></li>
+<li><p><code>&lt;SERVICE_NAME&gt;_SERVICE_PORT</code>: Represents the port where the server port is listed.</p></li>
+<li><p><code>&lt;SERVICE_NAME&gt;_PORT</code>: Represents the address, port, and protocol provided by the service for external access.</p></li>
+<li><p><code>&lt;SERVICE_NAME&gt;_PORT_&lt;PORT_NUMBER&gt;_&lt;PROTOCOL&gt;</code>: Defines an alias for the <code>&lt;SERVICE_NAME&gt;_PORT</code>.</p></li>
+<li><p><code>&lt;SERVICE_NAME&gt;_PORT_&lt;PORT_NUMBER&gt;_&lt;PROTOCOL&gt;_PROTO</code>: Identifies the protocol type (TCP or UDP).</p></li>
+<li><p><code>&lt;SERVICE_NAME&gt;_PORT_&lt;PORT_NUMBER&gt;_&lt;PROTOCOL&gt;_PORT</code>: Defines an alias for <code>&lt;SERVICE_NAME&gt;_SERVICE_PORT</code>. • <code>&lt;SERVICE_NAME&gt;_PORT_&lt;PORT_NUMBER&gt;_&lt;PROTOCOL&gt;_ADDR</code>: Defines an alias for <code>&lt;SERVICE_NAME&gt;_SERVICE_HOST</code>.</p></li>
+</ul>
+</section>
+<section id="deploying-a-multi-container-application-on-openshift-using-a-template" class="level3" data-number="6.7.3">
+<h3 data-number="6.7.3" class="anchored" data-anchor-id="deploying-a-multi-container-application-on-openshift-using-a-template"><span class="header-section-number">6.7.3</span> Deploying a Multi-container Application on OpenShift Using a Template</h3>
+<p>A template defines a set of related resources to be created together, as well as a set of application parameters.</p>
+<p>The OpenShift installer creates several templates by default in the openshift namespace.</p>
+<pre><code>[user@host ~]$ oc get templates -n openshift</code></pre>
+<ul>
+<li>Check the YAML definition of template</li>
+</ul>
+<pre><code>[user@host ~]$ oc get template mysql-persistent -n openshift -o yaml</code></pre>
+<ul>
+<li>Assuming the template is defined in the todo-template.yaml file, use the oc create command to publish the application template:</li>
+</ul>
+<pre><code>[user@host deploy-multicontainer]$ oc create -f todo-template.yaml</code></pre>
+<ul>
+<li>list available parameters from a template.</li>
+</ul>
+<pre><code>[user@host ~]$ oc describe template mysql-persistent -n openshift
+
+or
+
+[user@host ~]$ oc process --parameters mysql-persistent -n openshift</code></pre>
+<ul>
+<li>Processing a Template Using the CLI</li>
+</ul>
+<pre><code>[user@host ~]$ oc process -o yaml -f &lt;filename&gt;</code></pre>
+<ul>
+<li>Templates often generate resources with configurable attributes that are based on the template parameters. To override a parameter, use the -p option followed by a <name>=<value> pair.</value></name></li>
+</ul>
+<pre><code>[user@host ~]$ oc process -o yaml -f mysql.yaml -p MYSQL_USER=dev -p MYSQL_PASSWORD=$P4SSD -p MYSQL_DATABASE=bank -p VOLUME_CAPACITY=10Gi &gt; mysqlProcessed.yaml</code></pre>
+<ul>
+<li>To create an application use the generated YAML</li>
+</ul>
+<pre><code>[user@host ~]$ oc create -f mysqlProcessed.yaml</code></pre>
+<ul>
+<li>Alternatively, it is possible to process the template and create the application without saving a resource definition file by using a UNIX pipe:</li>
+</ul>
+<pre><code>[user@host ~]$ oc process -f mysql.yaml -p MYSQL_USER=dev  -p MYSQL_PASSWORD=$P4SSD -p MYSQL_DATABASE=bank  -p VOLUME_CAPACITY=10Gi | oc create -f -</code></pre>
+</section>
+</section>
+<section id="troubleshooting-containerized-applications" class="level2" data-number="6.8">
+<h2 data-number="6.8" class="anchored" data-anchor-id="troubleshooting-containerized-applications"><span class="header-section-number">6.8</span> Troubleshooting Containerized Applications</h2>
+<section id="troubleshooting-s2i-builds-and-deployments" class="level3" data-number="6.8.1">
+<h3 data-number="6.8.1" class="anchored" data-anchor-id="troubleshooting-s2i-builds-and-deployments"><span class="header-section-number">6.8.1</span> Troubleshooting S2I Builds and Deployments</h3>
+<p><strong>Introduction to the S2I Process</strong></p>
+<p>S2I is simple way to create image, however problems can heppens is important to keep in mind the workflow for most of the program languages :</p>
+<ul>
+<li><strong>Build step</strong> :
+<ul>
+<li>compiling source code, packaging the application as a container image</li>
+<li>push the image to the OpenShift registry for deployment step</li>
+<li>BC (<em>BuildConfig</em>) drive the build step</li>
+</ul></li>
+<li><strong>Deployment step</strong> :
+<ul>
+<li>starting a pod and making the application available</li>
+<li>executes after the build step</li>
+</ul></li>
+<li>Check the logs</li>
+</ul>
+<pre><code>$ oc logs bc/&lt;application-name&gt;</code></pre>
+<ul>
+<li>request a new build:</li>
+</ul>
+<pre><code>$ oc start-build &lt;application-name&gt;</code></pre>
+<ul>
+<li>Check the deployment logs</li>
+</ul>
+<pre><code>$ oc logs deployment/&lt;application-name&gt;</code></pre>
+<p><br></p>
+<p><strong>Common Problems</strong></p>
+<p>The <code>oc logs</code> command provides important information about the build, deploy, and run processes of an application during the execution of a pod. The logs may include : * missing values * options that must be enabled * incorrect parameters or flags * environment incompatibilities,etc</p>
+</section>
+<section id="troubleshooting-containerized-applications-1" class="level3" data-number="6.8.2">
+<h3 data-number="6.8.2" class="anchored" data-anchor-id="troubleshooting-containerized-applications-1"><span class="header-section-number">6.8.2</span> Troubleshooting Containerized Applications</h3>
+<p>Sometimes sysadmin need special access to container for example the dba need access the database container to check the database or sysadmin need to restart an specific service on a container, <strong>podman</strong> provides port forwarding features by using <code>-p</code> option with the `run`` subcommand</p>
+<pre><code>$ podman run --name db -p 30306:3306 mysql</code></pre>
+<p>OpenShift provide the <code>oc port-foward</code> command for fowarding a local port to a pod port.</p>
+<pre><code>$ oc port-forward db 30306 3306</code></pre>
+<ul>
+<li>To access the container logs</li>
+</ul>
+<pre><code>$ podman logs &lt;containerName&gt;</code></pre>
+<ul>
+<li>To access openshift logs</li>
+</ul>
+<pre><code>$ oc logs &lt;podName&gt;</code></pre>
+<ul>
+<li>To read openshift events</li>
+</ul>
+<pre><code>$ oc get events</code></pre>
+<ul>
+<li>Accessing Running Container</li>
+</ul>
+<pre><code>$ podman exec [options] container command [arguments
+
+$ oc exec [options] pod [-c container] -- command [arguments]
+
+# sample
+$ oc exec -it myhttpdpod /bin/bash
+$ podman exec apache-container cat /var/log/httpd/error_log</code></pre>
+<ul>
+<li>Transfer file to and from containers</li>
+</ul>
+<pre><code>$ podman run -v /conf:/etc/httpd/conf -d do180/apache
+
+$ podman cp standalone.conf todoapi:/opt/jboss/standalone/conf/standalone.conf
+$ podman cp todoapi:/opt/jboss/standalone/conf/standalone.conf .
+</code></pre>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./Sysadmin3.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Server Administrator III - RH294</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./OpenShift2.html" class="pagination-link">
+        <span class="nav-page-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Red Hat OpenShift Administration II: Operating a Production Kubernetes Cluster - DO280</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+</body></html>
